@@ -1,16 +1,13 @@
 ---
+type: Architecture
 title: "Three-Layer Task Model"
+description: "How pixi orchestration delegates to Rust xtask, Bun scripts, and native tools."
 section: architecture
 kind: detail
 tags: [architecture, tasks, pixi, xtask, bun, automation, layers]
-relates_to:
-  - pixi/tasks
-  - crates/xtask
-  - docs-app/bun-setup
-  - architecture/workspace-layout
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Three-Layer Task Model
@@ -272,3 +269,10 @@ composes them into workflows.
 | `npm run` for non-JS tasks | Forces npm/bun into Rust concerns | pixi tasks call cargo directly |
 | `cargo xtask` calling `bun` | Leaks JS concerns into Rust automation | pixi tasks compose xtask + bun, neither calls the other |
 | Global tool installs | "works on my machine," version drift | Everything from conda-forge via pixi |
+
+## Related Concepts
+
+- [Pixi Tasks](../pixi/tasks.md)
+- [xtask](../crates/xtask.md)
+- [Bun Setup](../docs-app/bun-setup.md)
+- [Workspace Layout](./workspace-layout.md)

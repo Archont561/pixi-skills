@@ -1,17 +1,13 @@
 ---
+type: Overview
 title: "CI/CD — Context"
+description: "Principles for the planned reproducible CI, release, and distribution pipeline."
 section: cicd
 kind: context
 tags: [cicd, context, github-actions, release, reproducibility]
-relates_to:
-  - cicd/github-actions
-  - cicd/release-workflow
-  - cicd/dist
-  - pixi/tasks
-  - pixi/environments
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # CI/CD — Context
@@ -80,3 +76,11 @@ artifacts with `xtask dist`.
   preventing untraceable changes in the changelog.
 - `fetch-depth: 0` is required so convco has full git history for
   commit validation and version calculation.
+
+## Related Concepts
+
+- [GitHub Actions](./github-actions.md)
+- [Release Workflow](./release-workflow.md)
+- [Distribution Artifacts](./dist.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Pixi Environments](../pixi/environments.md)

@@ -1,22 +1,17 @@
----
-title: "Conventions — Index"
-section: conventions
-kind: index
-tags: [conventions, index, navigation, commits, naming, format]
-relates_to:
-  - tooling/convco
-  - crates/CONTEXT
-status: stable
-created: 2025-01-01
-updated: 2026-09-17
----
-
 # Conventions — Index
 
 This section documents all project-wide conventions: how we commit, how
 we name things, how skills are formatted, and where config files live.
 
+## Start Here
+
+- [Context](./CONTEXT.md) — Scope and enforcement model for project-wide development conventions.
+- [Bundle index](../index.md) — Browse all knowledge sections.
+
 ## Pages
+
+### [knowledge-format.md](./knowledge-format.md)
+OKF v0.2 authoring rules, local extensions, validation, and migration notes for this bundle.
 
 ### [commit-conventions.md](./commit-conventions.md)
 Conventional commit format, allowed types (`feat`, `fix`, `docs`,
@@ -51,5 +46,9 @@ answer "where do I configure X?"
 ## Related Sections
 
 - [Tooling/convco](../tooling/convco.md) — enforces commit conventions
-- [Crates](../crates/INDEX.md) — follows crate naming conventions
-- [Pixi](../pixi/INDEX.md) — follows task naming conventions
+- [Crates](../crates/index.md) — follows crate naming conventions
+- [Pixi](../pixi/index.md) — follows task naming conventions
+
+## Related Concepts
+
+- [Crates — Context](../crates/CONTEXT.md)

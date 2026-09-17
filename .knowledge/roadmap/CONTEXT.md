@@ -1,15 +1,13 @@
 ---
+type: Overview
 title: "Roadmap — Context"
+description: "Roadmap principles, phase dependencies, and success criteria for the proposed product."
 section: roadmap
 kind: context
 tags: [roadmap, context, strategy, mvp, phasing, priorities]
-relates_to:
-  - roadmap/mvp-phases
-  - landscape/differentiation
-  - landscape/skills-sh
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Roadmap — Context
@@ -82,3 +80,9 @@ Phase 5 is open-ended — new providers can be added indefinitely.
 This is an open-source side project. No fixed deadlines. Phases are
 ordered by priority, not by calendar. The roadmap is a sequencing plan,
 not a schedule.
+
+## Related Concepts
+
+- [MVP Phases](./mvp-phases.md)
+- [Differentiation](../landscape/differentiation.md)
+- [skills.sh](../landscape/skills-sh.md)

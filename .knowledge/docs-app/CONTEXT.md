@@ -1,17 +1,13 @@
 ---
+type: Overview
 title: "Docs App — Context"
+description: "Scope and principles of the planned Astro Starlight documentation application."
 section: docs-app
 kind: context
 tags: [docs, astro, starlight, bun, context, content]
-relates_to:
-  - docs-app/astro-starlight
-  - docs-app/content-structure
-  - docs-app/bun-setup
-  - pixi/tasks
-  - crates/xtask
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Docs App — Context
@@ -95,3 +91,11 @@ GitHub Actions → pixi run -e all docs-build → dist/
 The entire build happens inside a pixi environment. CI uses
 `prefix-dev/setup-pixi` to install pixi, which installs Rust + bun +
 biome from conda-forge. One action, one command, fully reproducible.
+
+## Related Concepts
+
+- [Astro Starlight](./astro-starlight.md)
+- [Content Structure](./content-structure.md)
+- [Bun Setup](./bun-setup.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [xtask](../crates/xtask.md)

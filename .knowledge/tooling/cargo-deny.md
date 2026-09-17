@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "cargo-deny"
+description: "Planned dependency auditing, license policy, advisory checks, and source restrictions."
 section: tooling
 kind: detail
 tags: [tooling, cargo-deny, licenses, advisories, security, audit, dependencies]
-relates_to:
-  - tooling/CONTEXT
-  - pixi/tasks
-  - cicd/github-actions
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # cargo-deny
@@ -263,3 +260,10 @@ known patterns:
 - **License edge cases**: some Unicode consortium crates use
   `Unicode-3.0` or `Unicode-DFS-2016` licenses — both are in
   our allowlist.
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [GitHub Actions](../cicd/github-actions.md)
+- [Config Files](../conventions/config-files.md)

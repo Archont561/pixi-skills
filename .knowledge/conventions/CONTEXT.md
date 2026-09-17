@@ -1,16 +1,13 @@
 ---
+type: Overview
 title: "Conventions — Context"
+description: "Scope and enforcement model for project-wide development conventions."
 section: conventions
 kind: context
 tags: [conventions, context, consistency, naming, commits, format]
-relates_to:
-  - conventions/commit-conventions
-  - conventions/skill-format
-  - conventions/naming
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Conventions — Context
@@ -76,3 +73,11 @@ config live?"
 | TS/JS formatting | `biome check` | CI (`fmt-check-ts` task) |
 | Config placement | Documentation only | Code review |
 | Skill format | `skills-core` parser | Runtime (when skills are installed) |
+
+## Related Concepts
+
+- [Commit Conventions](./commit-conventions.md)
+- [Skill Format](./skill-format.md)
+- [Naming Conventions](./naming.md)
+- [Config Files](./config-files.md)
+- [Knowledge Format](./knowledge-format.md)

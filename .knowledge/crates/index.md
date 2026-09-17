@@ -1,21 +1,13 @@
----
-title: "Crates — Index"
-section: crates
-kind: index
-tags: [crates, index, navigation, rust]
-relates_to:
-  - architecture/dependency-graph
-  - architecture/workspace-layout
-status: stable
-created: 2025-01-01
-updated: 2026-09-17
----
-
 # Crates — Index
 
 This section documents every Rust crate in the workspace. Each crate
 has its own detail page covering purpose, public API, key types,
 dependencies, and implementation notes.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Planned Rust crate boundaries, provider isolation, and shared responsibilities.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Core Library
 
@@ -61,5 +53,9 @@ are Rust (not shell scripts) and how they integrate with pixi tasks.
 
 - [Architecture/dependency-graph](../architecture/dependency-graph.md) —
   visualizes how these crates depend on each other
-- [Tooling](../tooling/INDEX.md) — the tools used to build, test, and
+- [Tooling](../tooling/index.md) — the tools used to build, test, and
   lint these crates
+
+## Related Concepts
+
+- [Workspace Layout](../architecture/workspace-layout.md)

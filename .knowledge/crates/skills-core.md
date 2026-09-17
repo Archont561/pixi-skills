@@ -1,18 +1,13 @@
 ---
+type: Component Design
 title: "skills-core"
+description: "Design of shared skill models, registry traits, manifest parsing, and installation."
 section: crates
 kind: detail
 tags: [crates, skills-core, traits, models, installer, agent, registry]
-relates_to:
-  - crates/CONTEXT
-  - crates/skills-provider-github
-  - crates/skills-provider-conda
-  - crates/pixi-skills-cli
-  - architecture/dependency-graph
-  - conventions/skill-format
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills-core
@@ -585,3 +580,12 @@ skills-core/tests/fixtures/
     ├── copilot-project/      # .github/skills/ directory
     └── multi-agent/          # .claude/ + .cursor/ + .agents/
 ```
+
+## Related Concepts
+
+- [Crates — Context](./CONTEXT.md)
+- [skills-provider-github](./skills-provider-github.md)
+- [skills-provider-conda](./skills-provider-conda.md)
+- [pixi-skills CLI](./pixi-skills-cli.md)
+- [Dependency Graph](../architecture/dependency-graph.md)
+- [Skill Format](../conventions/skill-format.md)

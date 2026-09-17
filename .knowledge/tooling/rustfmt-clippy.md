@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "rustfmt & clippy"
+description: "Planned Rust formatting and linting configuration with rustfmt and clippy."
 section: tooling
 kind: detail
 tags: [tooling, rustfmt, clippy, formatting, linting, rust]
-relates_to:
-  - tooling/CONTEXT
-  - pixi/tasks
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # rustfmt & clippy
@@ -300,3 +298,9 @@ Fix the new warnings (preferred) or temporarily allow them in
 `[workspace.lints.clippy]` with a tracking issue to fix properly.
 Pinning the Rust version in `pixi.toml` (`rust = "=1.80"`) prevents
 surprise lint changes but delays security updates — use judiciously.
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Config Files](../conventions/config-files.md)

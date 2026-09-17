@@ -1,24 +1,26 @@
 ---
+type: Reference
 title: "GitHub Actions"
+description: "Planned pixi-based GitHub Actions workflows, caching, and environment selection."
 section: cicd
 kind: detail
 tags: [cicd, github-actions, ci, setup-pixi, caching, workflows]
-relates_to:
-  - cicd/CONTEXT
-  - cicd/release-workflow
-  - pixi/tasks
-  - pixi/environments
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # GitHub Actions
 
-All CI runs through pixi. The GitHub Actions workflows use the
-`prefix-dev/setup-pixi` action to install pixi, which then
-provisions every tool from conda-forge. No other setup actions
-are needed — no `actions/setup-rust`, no `oven-sh/setup-bun`.
+> **Current checkout:** `.github/workflows/knowledge.yml` is the
+> documentation-only validation workflow. It runs the Python validator
+> and regression tests described in [Knowledge Format](../conventions/knowledge-format.md).
+> The product workflows and version notes below are retained design
+> examples, not installed workflows or a new verification of action versions.
+
+In the planned product pipeline, all CI runs through pixi. The GitHub
+Actions workflows use `prefix-dev/setup-pixi` to provision the toolchain
+from conda-forge, without separate Rust or Bun setup actions.
 
 > **Action versions (verified 2026-09-17):**
 >
@@ -309,3 +311,10 @@ If a step fails, the log shows which specific task failed:
 
 The JUnit XML output (from nextest) provides per-test results
 rendered as PR annotations via `publish-unit-test-result-action`.
+
+## Related Concepts
+
+- [CI/CD — Context](./CONTEXT.md)
+- [Release Workflow](./release-workflow.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Pixi Environments](../pixi/environments.md)

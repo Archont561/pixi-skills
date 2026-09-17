@@ -1,17 +1,13 @@
 ---
+type: Proposal
 title: "Improvement Proposals — 2026-09 Strategy Review"
+description: "Product improvement proposals, adoption decisions, and MVP sequencing guidance."
 section: roadmap
 kind: detail
 tags: [roadmap, proposals, strategy, differentiation, standard, security]
-relates_to:
-  - roadmap/mvp-phases
-  - landscape/agent-skills-standard
-  - landscape/skills-sh
-  - landscape/differentiation
-  - conventions/skill-format
 status: draft
-created: 2026-09-17
-updated: 2026-09-17
+created: "2026-09-17"
+updated: "2026-09-17"
 ---
 
 # Improvement Proposals — 2026-09 Strategy Review
@@ -307,3 +303,10 @@ we ship the lighthouse.
 - **Should**: P1, P5, audit SARIF/policy
 - **Could**: P7, provenance/sigstore spike
 - **Won't (yet)**: P6 full, public portal, hosted registry SaaS
+
+## Related Concepts
+
+- [Agent Skills Open Standard](../landscape/agent-skills-standard.md)
+- [skills.sh](../landscape/skills-sh.md)
+- [Differentiation](../landscape/differentiation.md)
+- [Skill Format](../conventions/skill-format.md)

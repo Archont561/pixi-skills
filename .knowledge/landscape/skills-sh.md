@@ -1,16 +1,13 @@
 ---
+type: Comparative Analysis
 title: "skills.sh"
+description: "Overview of the skills.sh ecosystem, compatibility goals, and remaining product gaps."
 section: landscape
 kind: detail
 tags: [landscape, skills-sh, competition, github, npm, npx, vercel]
-relates_to:
-  - landscape/CONTEXT
-  - landscape/differentiation
-  - landscape/agent-skills-standard
-  - crates/skills-provider-github
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills.sh
@@ -161,5 +158,13 @@ content hash** in `skills-lock.toml`. `@branch:main` remains possible
 but discouraged (same drift problem as skills.sh — now they detect
 drift; we prevent it silently becoming the new baseline).
 
-See the [migrating-from-skills-sh](/guides/migrating-from-skills-sh/)
-guide on the docs site.
+The planned `migrating-from-skills-sh` guide is described in the
+[documentation content plan](../docs-app/content-structure.md#section-3-guides).
+The docs-site route does not exist in this bundle.
+
+## Related Concepts
+
+- [Landscape — Context](./CONTEXT.md)
+- [Differentiation](./differentiation.md)
+- [Agent Skills Open Standard](./agent-skills-standard.md)
+- [skills-provider-github](../crates/skills-provider-github.md)

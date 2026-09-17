@@ -1,17 +1,13 @@
 ---
+type: Overview
 title: "Pixi — Context"
+description: "Role of pixi in the planned workspace, dependency provisioning, and task orchestration."
 section: pixi
 kind: context
 tags: [pixi, context, environments, tasks, conda-forge, reproducibility]
-relates_to:
-  - pixi/environments
-  - pixi/tasks
-  - pixi/features
-  - pixi/conda-forge-packages
-  - architecture/three-layer-model
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Pixi — Context
@@ -82,3 +78,11 @@ composition is automatic.
 | `docs` | docs | Docs site development |
 | `release` | rust, lint, release | Cutting releases |
 | `all` | rust, lint, docs, release, all | CI, full builds |
+
+## Related Concepts
+
+- [Pixi Environments](./environments.md)
+- [Pixi Tasks](./tasks.md)
+- [Pixi Features](./features.md)
+- [conda-forge Packages](./conda-forge-packages.md)
+- [Three-Layer Task Model](../architecture/three-layer-model.md)

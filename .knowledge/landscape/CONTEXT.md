@@ -1,16 +1,13 @@
 ---
+type: Overview
 title: "Landscape — Context"
+description: "Market context and competitive positioning that inform the pixi-skills design."
 section: landscape
 kind: context
 tags: [landscape, context, competition, skills, ecosystem, market]
-relates_to:
-  - landscape/skills-sh
-  - landscape/npm-skills
-  - landscape/pixi-ecosystem
-  - landscape/differentiation
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Landscape — Context
@@ -102,3 +99,10 @@ The MVP starts with `skills-provider-github` for instant ecosystem
 access (Phase 1), then layers conda-native support as the key
 differentiator (Phase 3). This sequence gets us a working product
 quickly while building toward the real value proposition.
+
+## Related Concepts
+
+- [skills.sh](./skills-sh.md)
+- [npm-skills](./npm-skills.md)
+- [Pixi Ecosystem](./pixi-ecosystem.md)
+- [Differentiation](./differentiation.md)

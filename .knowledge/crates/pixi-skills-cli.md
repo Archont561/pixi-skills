@@ -1,16 +1,13 @@
 ---
+type: Component Design
 title: "pixi-skills CLI"
+description: "Design of the pixi-skills CLI, subcommands, user experience, and provider composition."
 section: crates
 kind: detail
 tags: [crates, cli, clap, pixi-extension, subcommands, ux]
-relates_to:
-  - crates/skills-core
-  - crates/xtask
-  - architecture/design-decisions
-  - pixi/tasks
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # pixi-skills CLI
@@ -415,3 +412,10 @@ fn generate() {
 
 This is why xtask depends on `pixi-skills` — it needs compile-time
 access to the real command tree, not parsed `--help` output.
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [xtask](./xtask.md)
+- [Design Decisions](../architecture/design-decisions.md)
+- [Pixi Tasks](../pixi/tasks.md)

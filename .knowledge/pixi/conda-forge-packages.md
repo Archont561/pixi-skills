@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "conda-forge Packages"
+description: "Planned conda-forge toolchain packages, version constraints, and pinning strategy."
 section: pixi
 kind: detail
 tags: [pixi, conda-forge, packages, dependencies, versions, pinning]
-relates_to:
-  - pixi/CONTEXT
-  - pixi/features
-  - pixi/environments
-  - tooling/CONTEXT
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # conda-forge Packages
@@ -200,3 +197,10 @@ reviewed in PR review, especially for security-sensitive packages
 ```bash
 git diff pixi.lock    # Review package version changes
 ```
+
+## Related Concepts
+
+- [Pixi — Context](./CONTEXT.md)
+- [Pixi Features](./features.md)
+- [Pixi Environments](./environments.md)
+- [Tooling — Context](../tooling/CONTEXT.md)

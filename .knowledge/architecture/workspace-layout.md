@@ -1,25 +1,22 @@
 ---
+type: Architecture
 title: "Workspace Layout"
+description: "Annotated target workspace layout and the intended role of each directory."
 section: architecture
 kind: detail
 tags: [architecture, workspace, layout, monorepo, directories, files]
-relates_to:
-  - architecture/three-layer-model
-  - architecture/dependency-graph
-  - crates/CONTEXT
-  - docs-app/CONTEXT
-  - pixi/CONTEXT
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Workspace Layout
 
-This page provides a fully annotated directory tree of the pixi-skills
-monorepo, explaining the purpose of every directory and significant
-file.
+This page provides a fully annotated **target** directory tree of the
+pixi-skills monorepo, explaining the intended purpose of every directory
+and significant file. The current checkout contains the knowledge bundle
+and its validation tooling; the product workspace below is not yet
+implemented.
 
 ---
 
@@ -153,7 +150,8 @@ pixi-skills/
 │── ── Knowledge Base ─────────────────────────────────────────────
 │
 └── .knowledge/                   # This knowledge base (you are here)
-    ├── INDEX.md
+    ├── index.md                # OKF bundle entry point
+    ├── log.md                  # Date-grouped maintenance history
     ├── CONTEXT.md
     ├── architecture/
     ├── crates/
@@ -216,9 +214,11 @@ source. They are regenerated as part of the release process.
 
 ### `.knowledge/` — Project knowledge base
 
-Markdown files with YAML frontmatter, organized into sections. Read by
-AI coding agents and human contributors. Not deployed anywhere — purely
-a repo-local resource.
+An [OKF v0.2 Knowledge Bundle](../conventions/knowledge-format.md),
+organized into linked Markdown concepts with YAML frontmatter. Reserved
+`index.md` files provide navigation; `log.md` records maintenance.
+Readable by AI coding agents and human contributors, and distributable
+independently of the planned application.
 
 ---
 
@@ -253,3 +253,11 @@ full details on each config file's contents and schema.
 | Example skills | Separate `pixi-skills-registry` repo (future) | Keeps the tool repo focused |
 | VS Code extension | Separate repo (future) | Different release cycle, different audience |
 | Benchmarks | `crates/*/benches/` (if needed) | Not yet needed at MVP stage |
+
+## Related Concepts
+
+- [Three-Layer Task Model](./three-layer-model.md)
+- [Dependency Graph](./dependency-graph.md)
+- [Crates — Context](../crates/CONTEXT.md)
+- [Docs App — Context](../docs-app/CONTEXT.md)
+- [Pixi — Context](../pixi/CONTEXT.md)

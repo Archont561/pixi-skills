@@ -1,15 +1,13 @@
 ---
+type: Component Design
 title: "skills-provider-prefix"
+description: "Design of prefix.dev-specific provider capabilities and private-channel integration."
 section: crates
 kind: detail
 tags: [crates, provider, prefix, prefix-dev, oci, enterprise, private]
-relates_to:
-  - crates/skills-core
-  - crates/skills-provider-conda
-  - landscape/pixi-ecosystem
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills-provider-prefix
@@ -127,3 +125,9 @@ prefix.dev authentication is handled via:
 | Unit tests | Channel URL resolution, org name → URL mapping |
 | Integration (mocked) | REST API responses simulated with wiremock |
 | Integration (live) | Gated behind `live-tests`, queries public prefix.dev channels |
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [skills-provider-conda](./skills-provider-conda.md)
+- [Pixi Ecosystem](../landscape/pixi-ecosystem.md)

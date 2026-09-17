@@ -1,17 +1,13 @@
 ---
+type: Convention
 title: "Skill Format"
+description: "Adopted Agent Skills folder format, YAML frontmatter, packaging, and compatibility rules."
 section: conventions
 kind: detail
 tags: [conventions, skill-format, SKILL.md, folder, yaml, companion, skill-toml, agentskills, spec]
-relates_to:
-  - conventions/CONTEXT
-  - crates/skills-core
-  - landscape/skills-sh
-  - landscape/agent-skills-standard
-  - architecture/design-decisions
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Skill Format
@@ -282,3 +278,11 @@ depends_on = ["git-workflows"]
 agents = ["claude", "cursor", "codex"]
 tags = ["testing", "browser", "e2e", "playwright"]
 ```
+
+## Related Concepts
+
+- [Conventions — Context](./CONTEXT.md)
+- [skills-core](../crates/skills-core.md)
+- [skills.sh](../landscape/skills-sh.md)
+- [Agent Skills Open Standard](../landscape/agent-skills-standard.md)
+- [Design Decisions](../architecture/design-decisions.md)

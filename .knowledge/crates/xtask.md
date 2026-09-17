@@ -1,18 +1,13 @@
 ---
+type: Component Design
 title: "xtask"
+description: "Design of Rust-native automation for code generation, linting, releases, and distribution."
 section: crates
 kind: detail
 tags: [crates, xtask, automation, codegen, release, lint, dist]
-relates_to:
-  - architecture/three-layer-model
-  - architecture/dependency-graph
-  - crates/pixi-skills-cli
-  - pixi/tasks
-  - cicd/release-workflow
-  - tooling/convco
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # xtask
@@ -353,3 +348,12 @@ pixi-skills-v0.3.0-x86_64-unknown-linux-gnu/
 | `lint` | Create fixture workspace with known violations, assert lint catches them |
 | `release` | Test version bumping logic with fixture Cargo.toml files (no git operations) |
 | `dist` | Test tarball creation with temp directory, verify contents and checksums |
+
+## Related Concepts
+
+- [Three-Layer Task Model](../architecture/three-layer-model.md)
+- [Dependency Graph](../architecture/dependency-graph.md)
+- [pixi-skills CLI](./pixi-skills-cli.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Release Workflow](../cicd/release-workflow.md)
+- [convco](../tooling/convco.md)

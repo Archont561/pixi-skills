@@ -1,15 +1,13 @@
 ---
+type: Overview
 title: "Crates — Context"
+description: "Planned Rust crate boundaries, provider isolation, and shared responsibilities."
 section: crates
 kind: context
 tags: [crates, context, rust, workspace, traits, providers]
-relates_to:
-  - crates/skills-core
-  - crates/pixi-skills-cli
-  - architecture/dependency-graph
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Crates — Context
@@ -108,3 +106,9 @@ This allows building a minimal CLI with only the providers you need.
 | `schemars` | xtask | JSON Schema generation from Rust types |
 | `xshell` | xtask | Shell command execution in xtask |
 | `toml_edit` | xtask | Programmatic Cargo.toml modification |
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [pixi-skills CLI](./pixi-skills-cli.md)
+- [Dependency Graph](../architecture/dependency-graph.md)

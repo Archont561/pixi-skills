@@ -1,14 +1,13 @@
 ---
+type: Component Design
 title: "skills-provider-pypi"
+description: "Proposed future PyPI provider and its packaging and dependency constraints."
 section: crates
 kind: detail
 tags: [crates, provider, pypi, python, pip, uv, future]
-relates_to:
-  - crates/skills-core
-  - roadmap/mvp-phases
 status: draft
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills-provider-pypi
@@ -117,3 +116,8 @@ index = "https://pypi.org/simple/"    # optional, defaults to PyPI
 **Not yet implemented.** This file documents the planned design.
 Implementation begins in Phase 5 of the roadmap, after the lockfile
 (Phase 4) is complete.
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [MVP Phases](../roadmap/mvp-phases.md)

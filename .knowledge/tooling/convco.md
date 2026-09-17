@@ -1,17 +1,13 @@
 ---
+type: Reference
 title: "convco"
+description: "Planned conventional commit validation, changelog generation, and semantic versioning."
 section: tooling
 kind: detail
 tags: [tooling, convco, conventional-commits, changelog, versioning, release]
-relates_to:
-  - tooling/CONTEXT
-  - conventions/commit-conventions
-  - cicd/release-workflow
-  - crates/xtask
-  - pixi/tasks
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # convco
@@ -328,3 +324,11 @@ linter).
 1. Configure the bot to use conventional commit format
 2. Add a CI exception for bot commits
 3. Use squash merge to override the bot's commit message
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Commit Conventions](../conventions/commit-conventions.md)
+- [Release Workflow](../cicd/release-workflow.md)
+- [xtask](../crates/xtask.md)
+- [Pixi Tasks](../pixi/tasks.md)

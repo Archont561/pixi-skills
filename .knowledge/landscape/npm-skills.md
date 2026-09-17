@@ -1,15 +1,13 @@
 ---
+type: Comparative Analysis
 title: "npm-skills"
+description: "Overview of npm-distributed agent skills and their strengths and limitations."
 section: landscape
 kind: detail
 tags: [landscape, npm-skills, npm, anthony-fu, competition]
-relates_to:
-  - landscape/CONTEXT
-  - landscape/differentiation
-  - landscape/skills-sh
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # npm-skills
@@ -107,3 +105,9 @@ pixi-skills applies the same principle but generalizes it:
 The `skill-*` naming convention for conda packages is directly
 inspired by the npm-skills `skills/` directory convention — but
 as a first-class package type, not an add-on to existing packages.
+
+## Related Concepts
+
+- [Landscape — Context](./CONTEXT.md)
+- [Differentiation](./differentiation.md)
+- [skills.sh](./skills-sh.md)

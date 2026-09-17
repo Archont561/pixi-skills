@@ -1,14 +1,13 @@
 ---
+type: Reference
 title: "Custom Components"
+description: "Planned Astro and MDX components, their props, and usage patterns."
 section: docs-app
 kind: detail
 tags: [docs, components, astro, mdx, SkillCard, ProviderBadge, CLIDemo]
-relates_to:
-  - docs-app/astro-starlight
-  - docs-app/content-structure
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Custom Components
@@ -325,3 +324,8 @@ More markdown after the component.
 
 Import paths are relative to the MDX file. Components are imported
 at the top of the MDX body (after frontmatter, before content).
+
+## Related Concepts
+
+- [Astro Starlight](./astro-starlight.md)
+- [Content Structure](./content-structure.md)
