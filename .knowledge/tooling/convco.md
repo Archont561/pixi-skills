@@ -11,7 +11,7 @@ relates_to:
   - pixi/tasks
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # convco
@@ -43,6 +43,11 @@ cargo install convco
 environment. The `release` pixi feature ensures convco is available
 when needed for release tasks. If convco becomes available on
 conda-forge, switch to `pixi add convco`.
+
+> **Updated 2026-09-17:** latest convco is 0.6.4 (2026-05); still
+> not packaged on conda-forge — the `cargo install convco` path
+> remains the way to get it. The `.convco` config `"version": "0.6"`
+> below stays valid for the whole 0.6.x line.
 
 ---
 

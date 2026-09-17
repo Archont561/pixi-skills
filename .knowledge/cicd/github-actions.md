@@ -10,7 +10,7 @@ relates_to:
   - pixi/environments
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # GitHub Actions
@@ -19,6 +19,18 @@ All CI runs through pixi. The GitHub Actions workflows use the
 `prefix-dev/setup-pixi` action to install pixi, which then
 provisions every tool from conda-forge. No other setup actions
 are needed — no `actions/setup-rust`, no `oven-sh/setup-bun`.
+
+> **Action versions (verified 2026-09-17):**
+>
+> | Action | Pinned to | Notes |
+> |---|---|---|
+> | `actions/checkout` | `v5` | Node-24 runner migration; v4 is legacy |
+> | `prefix-dev/setup-pixi` | `v0.10.2` | Pin the **full** version — the action's API can change between minors (official guidance). Pairs with pixi `v0.81.0` |
+> | `actions/upload-pages-artifact` | `v5` | v5.x requires `deploy-pages` v4+ |
+> | `actions/deploy-pages` | `v5` | Current major |
+> | `actions/upload-artifact` / `download-artifact` | `v5` | Artifact actions ship new majors frequently (v7+ adds `archive: false` single-file uploads) — re-check at upgrade time |
+> | `EnricoMi/publish-unit-test-result-action` | `v2` | Still the current major (v2.24.x) |
+> | `softprops/action-gh-release` | `v2` | Still the current major |
 
 ---
 
@@ -43,12 +55,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0          # Full history for convco
 
       - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8
+        uses: prefix-dev/setup-pixi@v0.10.2
         with:
           environments: all
           cache: true
@@ -66,7 +78,7 @@ jobs:
 
       - name: Upload docs artifact
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: apps/pixi-skills-docs/dist/
 ```
@@ -125,11 +137,11 @@ jobs:
     name: Build Docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: prefix-dev/setup-pixi@v0.8
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
           environments: all
           cache: true
@@ -138,7 +150,7 @@ jobs:
         run: pixi run -e all docs-build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: apps/pixi-skills-docs/dist/
 
@@ -152,7 +164,7 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 ```
 
 ### Deployment Flow
@@ -196,10 +208,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: prefix-dev/setup-pixi@v0.8
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
           environments: all
           cache: true

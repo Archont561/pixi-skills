@@ -10,7 +10,7 @@ relates_to:
   - conventions/config-files
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Conventions — Context
@@ -40,12 +40,18 @@ enables:
 - Meaningful git history that can be parsed by tools and humans
 
 ### 2. Skill format (defined by skills-core, documented here)
-The `SKILL.md` format with optional TOML frontmatter is the unit of
-content that pixi-skills manages. The format must be:
+The skill **folder** — `SKILL.md` with YAML frontmatter per the
+agentskills.io open standard, plus optional `scripts/`,
+`references/`, `assets/`, and our companion `skill.toml` envelope —
+is the unit of content that pixi-skills manages. The format must be:
 - Simple enough that anyone can write a skill in a text editor
+- 100% compliant with the open standard, so 26+ agents read it natively
 - Structured enough that tools can parse metadata (version, agent
-  compatibility, dependencies)
-- Compatible with existing skills.sh skills (which are plain markdown)
+  compatibility, dependencies) from the companion envelope
+- Backward-readable with pre-standard skills (bare markdown files)
+
+*(Updated 2026-09-17 — previously described a single-file SKILL.md
+with TOML frontmatter; superseded by ADR-008.)*
 
 ### 3. Naming conventions (enforced by xtask lint)
 Consistent naming across crates, packages, tasks, and files reduces

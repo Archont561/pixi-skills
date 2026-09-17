@@ -10,7 +10,7 @@ relates_to:
   - roadmap/mvp-phases
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # skills-provider-github
@@ -46,19 +46,33 @@ tracing = "0.1"
 
 ## How It Works
 
-### Source Format
+### Source Format (updated 2026-09, ADR-008)
 
-GitHub skills are referenced by repository:
+GitHub skills are referenced by repository; the unit is the **skill
+folder** (agentskills.io standard):
 
 ```toml
 # skills.toml
 [[skill]]
 name = "playwright"
 source = "github"
-repo = "anthropics/skill-playwright"
-ref = "tag:v1.0.0"                    # or "branch:main", "commit:abc123"
-path = "SKILL.md"                     # optional, defaults to SKILL.md
+repo = "anthropics/skills"
+ref = "tag:v1.0.0"                    # or "branch:main", "commit:abc123",
+                                      # or "^1.4" (semver range over [v]X.Y.Z tags)
+path = "skills/playwright"            # folder containing SKILL.md
+                                      # (default: repo convention probes below)
+
+[[skill]]                             # Multi-skill repo, @skill convention:
+name = "web-design-guidelines"        #   pixi skills add github:vercel-labs/agent-skills@web-design-guidelines
+source = "github"
+repo = "vercel-labs/agent-skills"
+skill = "web-design-guidelines"       # resolves to skills/<skill>/ or <skill>/
+ref = "^1.4"
 ```
+
+**Folder resolution order** (first hit wins): explicit `path=` →
+`skill=` selector (`skills/<skill>/`, then `<skill>/`) → repo root
+(single-skill repo with root SKILL.md).
 
 ### Fetching Strategy
 
@@ -67,32 +81,38 @@ path = "SKILL.md"                     # optional, defaults to SKILL.md
    GET /repos/{owner}/{repo}/git/ref/tags/{tag}
    or
    GET /repos/{owner}/{repo}/branches/{branch}
+   (for semver ranges: list tags, filter [v]X.Y.Z, pick max satisfying)
 
-2. Fetch file content
-   GET /repos/{owner}/{repo}/contents/{path}?ref={sha}
-   (Returns base64-encoded content via GitHub API)
-   or
-   GET https://raw.githubusercontent.com/{owner}/{repo}/{sha}/{path}
-   (Raw content, no API rate limit for public repos)
+2. Fetch the skill FOLDER as a tree
+   Preferred: GET /repos/{owner}/{repo}/git/trees/{sha}?recursive=1
+     → filter entries under the skill path → fetch blobs
+   Alternative (fewer calls): codeload tarball
+     GET /repos/{owner}/{repo}/tarball/{sha} → extract subtree
 
-3. Parse SKILL.md
-   Extract TOML frontmatter (if present)
-   Compute content hash (SHA-256 of the raw content)
+3. Parse + hash
+   YAML frontmatter of SKILL.md (spec fields; unknown preserved)
+   companion skill.toml if present (manager envelope)
+   Canonical TREE hash over the folder (ADR-008 §4)
 
-4. Return Skill struct
+4. Return Skill struct (bundle)
 ```
 
-### skills.sh Compatibility
+### skills.sh Compatibility (standard era)
 
-skills.sh publishes skills as GitHub repos following a loose convention.
-This provider is compatible with those repos:
+The skills.sh ecosystem now publishes **spec-compliant folders**
+(`vercel-labs/agent-skills`, `anthropics/skills`). Compatibility
+target: *every source string `npx skills add` accepts* (see
+`landscape/skills-sh.md` for the full source-format list).
 
 | skills.sh convention | Our handling |
 |---|---|
-| Skill content in `SKILL.md` at repo root | Default path is `SKILL.md` |
-| No version tags | `ref: "branch:main"` works, `Latest` works |
-| Multiple skills per repo (subdirectories) | `path` field supports subdirectories |
-| No TOML frontmatter | Frontmatter is optional — plain markdown works |
+| Skill folder at repo root (single-skill repo) | Default probe finds root SKILL.md |
+| `skills/<name>/` multi-skill layout | `skill = "<name>"` selector (== `@skill` UX) |
+| YAML frontmatter (spec) | Parsed natively; unknown fields preserved |
+| `scripts/`, `references/`, `assets/`, `agents/` | Fetched & installed as part of the bundle |
+| Bare markdown, no frontmatter (legacy) | Read-only support: one-file bundle, name from H1/folder |
+| No version tags | `ref: "branch:main"` works, `Latest` works (lint warns) |
+| Semver-looking tags (`v1.4.0`) | Exposed as semver → ranges supported (ADR-004, amended) |
 
 ### Search Implementation
 
@@ -100,19 +120,21 @@ GitHub search has limitations for skill discovery:
 
 ```rust
 async fn search(&self, query: &str) -> Result<Vec<SkillSummary>> {
-    // Strategy 1: GitHub code search for SKILL.md files
+    // Strategy 1: skills.sh public index (83k+ skills, leaderboard
+    //   signals) — the normative search backend (ADR-009), with
+    //   graceful degradation to strategies 2-3 on outage
+    //
+    // Strategy 2: GitHub code search for SKILL.md files
     // GET /search/code?q={query}+filename:SKILL.md
     //
-    // Strategy 2: GitHub topic search
-    // GET /search/repositories?q=topic:pixi-skill+{query}
-    //
-    // Strategy 3: Curated registry (future)
-    // Fetch a known index repo that lists skill repos
+    // Strategy 3: GitHub topic search
+    // GET /search/repositories?q=topic:agent-skill+{query}
 }
 ```
 
-Search is best-effort for GitHub. The conda provider will have much
-better search via repodata.
+Search is best-effort for GitHub proper; the skills.sh index gives
+ranked ecosystem coverage, and the conda provider gives exact
+repodata search.
 
 ### Rate Limiting
 
@@ -130,14 +152,17 @@ Fetched skills are cached locally to avoid repeated API calls:
 
 ```
 ~/.cache/pixi-skills/github/
-├── {owner}/{repo}/{commit_sha}/
-│   └── SKILL.md
-└── rate-limit.json        # Cached rate limit status
+├── {owner}/{repo}/{commit_sha}/{skill_path}/
+│   ├── SKILL.md
+│   ├── skill.toml            # if present upstream
+│   └── ...                   # scripts/, references/, ... (whole bundle)
+└── rate-limit.json           # Cached rate limit status
 ```
 
-Cache invalidation: content is keyed by commit SHA. If the ref
-resolves to a new SHA, the old cache entry is stale but not deleted
-(it may be useful for rollback).
+Cache invalidation: bundles are keyed by commit SHA + skill path. If
+the ref resolves to a new SHA, the old cache entry is stale but not
+deleted (it may be useful for rollback). The cache doubles as the
+content-addressed store — installs only ever copy from cache.
 
 ---
 
@@ -193,13 +218,13 @@ impl SkillRegistry for GitHubRegistry {
 ```
 skills-provider-github/tests/fixtures/
 ├── api-responses/
-│   ├── contents-skill-md.json       # GitHub Contents API response
+│   ├── trees-recursive.json         # Git Trees API (recursive) response
 │   ├── ref-tag-v1.json              # Git ref resolution response
+│   ├── tags-list.json               # Tag listing (semver range tests)
 │   ├── search-code.json             # Code search response
 │   └── rate-limit-exceeded.json     # 403 rate limit response
 └── skills/
-    ├── plain-markdown.md            # SKILL.md without frontmatter
-    ├── with-frontmatter.md          # SKILL.md with TOML frontmatter
-    └── nested/
-        └── SKILL.md                 # Skill in a subdirectory
+    ├── spec-folder/                 # SKILL.md (YAML) + skill.toml + scripts/
+    ├── bare-markdown/               # legacy: plain SKILL.md, no frontmatter
+    └── nested/skills/playwright/    # multi-skill repo layout (skills/<name>/)
 ```

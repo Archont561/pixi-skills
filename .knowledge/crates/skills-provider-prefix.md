@@ -9,7 +9,7 @@ relates_to:
   - landscape/pixi-ecosystem
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # skills-provider-prefix

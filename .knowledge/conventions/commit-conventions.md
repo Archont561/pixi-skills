@@ -9,7 +9,7 @@ relates_to:
   - cicd/release-workflow
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Commit Conventions
@@ -187,7 +187,7 @@ Configure branch protection to require conventional PR titles:
 | Mistake | Fix |
 |---|---|
 | `Updated the README` | `docs: update README` or `docs(docs): update README` |
-| `Fix bug in parser` | `fix(core): handle empty TOML frontmatter` |
+| `Fix bug in parser` | `fix(core): handle empty YAML frontmatter` |
 | `WIP` | Don't commit WIP. Use draft PRs or `git stash`. If committed, interactive-rebase before merge. |
 | `feat: add X and fix Y` | Split into two commits: `feat: add X` and `fix: fix Y` |
 | `feat(Core): ...` (uppercase scope) | Use lowercase: `feat(core): ...` |

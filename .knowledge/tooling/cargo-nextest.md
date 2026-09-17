@@ -10,7 +10,7 @@ relates_to:
   - conventions/config-files
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # cargo-nextest
@@ -31,6 +31,11 @@ cargo-nextest = ">=0.9"
 
 Installed via pixi from conda-forge. Replaces `cargo test` for
 all workspace test execution.
+
+> **Updated 2026-09-17:** nextest is still on its rolling 0.9.x series
+> (latest 0.9.143, 2026-08) — the `>=0.9` floor remains correct.
+> `cargo install --locked cargo-nextest` is required when building
+> from source, but pixi/conda-forge ships prebuilt binaries.
 
 ---
 

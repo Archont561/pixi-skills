@@ -10,7 +10,7 @@ relates_to:
   - architecture/design-decisions
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # skills-provider-conda
@@ -50,10 +50,11 @@ url = "2"
 
 ## How It Works
 
-### Skill Package Convention
+### Skill Package Convention (updated 2026-09, ADR-002 amended + ADR-008)
 
 Skills are published as `noarch` conda packages with the `skill-*`
-naming prefix (see ADR-002):
+naming prefix. The payload is a **folder tree** per the agentskills.io
+standard:
 
 ```
 Package: skill-playwright
@@ -62,12 +63,21 @@ Build: 0
 Subdir: noarch
 Files:
   skills/
-    └── playwright.md         # The skill content
+    └── playwright/               # folder name == frontmatter name
+        ├── SKILL.md              # required (YAML frontmatter, spec)
+        ├── skill.toml            # optional manager envelope
+        ├── scripts/              # optional
+        │   └── login-flow.sh
+        ├── references/           # optional
+        └── assets/               # optional
   info/
     ├── index.json
-    ├── about.json            # tags: ["pixi-skill"]
+    ├── about.json            # tags: ["agent-skill", "pixi-skill"]
     └── paths.json
 ```
+
+Package `version` is authoritative; `skill.toml [package].version`
+should mirror it (lint warns on divergence).
 
 ### Discovery via Repodata
 
@@ -93,12 +103,14 @@ Files:
 2. Download the .conda package
    rattler_repodata_gateway::download(record)
 
-3. Extract skill content from the package
-   rattler_package_streaming::extract("skills/*.md")
+3. Extract the skill FOLDER from the package
+   rattler_package_streaming::extract("skills/<name>/**")
+   (single-skill packages; reject ambiguous multi-skill payloads)
 
-4. Parse SKILL.md, compute content hash
+4. Parse SKILL.md (YAML frontmatter) + companion skill.toml,
+   compute canonical tree hash over the folder
 
-5. Return Skill struct
+5. Return Skill struct (bundle)
 ```
 
 ### Version Resolution
@@ -137,7 +149,7 @@ fn to_match_spec(name: &str, req: &VersionReq) -> MatchSpec {
 |---|---|
 | `rattler_conda_types` | `Channel`, `PackageName`, `Version`, `MatchSpec`, `RepoDataRecord`, `Platform` — all the core conda data types |
 | `rattler_repodata_gateway` | Fetching, caching, and parsing `repodata.json` from conda channels. Handles HTTP, local files, OCI. Manages the repodata cache (`~/.cache/rattler/`). |
-| `rattler_package_streaming` | Extracting files from `.conda` (zstd-compressed) and `.tar.bz2` packages without extracting the entire archive. We extract only `skills/*.md`. |
+| `rattler_package_streaming` | Extracting files from `.conda` (zstd-compressed) and `.tar.bz2` packages without extracting the entire archive. We extract only `skills/<name>/**`. |
 | `rattler_lock` | Reading and writing conda-style lockfiles. We use this for potential integration with `pixi.lock`, though our primary lockfile is `skills-lock.toml`. |
 | `rattler_networking` | Authentication middleware — handles tokens for private channels (prefix.dev, Artifactory, etc.) |
 
@@ -188,8 +200,8 @@ impl SkillRegistry for CondaRegistry {
     ) -> Result<Skill> {
         // Resolve version via MatchSpec
         // Download .conda package
-        // Extract skills/*.md
-        // Parse + hash + return
+        // Extract the skills/<name>/** folder tree
+        // Parse (YAML + companion) + tree-hash + return bundle
     }
 }
 ```

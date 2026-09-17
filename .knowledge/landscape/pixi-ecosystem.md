@@ -9,7 +9,7 @@ relates_to:
   - architecture/dependency-graph
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Pixi Ecosystem
@@ -27,6 +27,17 @@ this ecosystem into the AI agent skills domain.
 A cross-platform, multi-language package manager and workflow tool
 built on the conda ecosystem. Provides developers with an experience
 similar to cargo or yarn, but for any language.
+
+**Version snapshot (2026-09-17):** latest release **v0.81.0**
+(2026-09-15). Notable for us:
+- **Lockfile v7** (since v0.68.0, 2026-05): more stable, portable
+  (no machine-specific absolute paths), enables reproducible source
+  builds. Requires collaborators/CI to run a recent pixi.
+- `pixi build` is **deprecated → `pixi publish`** (relevant if we
+  publish pixi-skills itself as a conda package).
+- Multi-line tasks supported (v0.68+); `workspace = true` inheritance
+  in environment dependency tables (v0.73+); better RISC-V defaults
+  (v0.79+).
 
 **Relevance to pixi-skills**:
 - pixi-skills is a pixi extension (invoked as `pixi skills`)
@@ -142,20 +153,23 @@ a conda channel hosting service (prefix.dev) with:
 
 ---
 
-## Ecosystem Maturity
+## Ecosystem Maturity (updated 2026-09-17)
 
-| Project | Maturity | API stability |
-|---|---|---|
-| pixi | Production-ready | Stable CLI, evolving config format |
-| rattler | Production-ready | Crate APIs still evolving (minor version bumps may break) |
-| pixi-pack | Production-ready | Stable CLI |
-| rattler-build | Production-ready | Stable CLI, recipe format evolving |
-| prefix.dev | Production SaaS | Stable API |
+| Project | Maturity | Current version | API stability |
+|---|---|---|---|
+| pixi | Production-ready, ~7k GitHub stars | v0.81.0 (2026-09) | Stable CLI, evolving config format |
+| rattler | Production-ready | `rattler_conda_types` 0.50.0 (2026-09); py-rattler 0.25 (lockfile v7) | Crate APIs still evolving fast — minor bumps break; pin + test in CI |
+| pixi-pack | Production-ready | — | Stable CLI |
+| rattler-build | Production-ready | — | Stable CLI, recipe format evolving |
+| prefix.dev | Production SaaS | — | Stable API |
 
 ### Implications for pixi-skills
 
 - rattler crate API changes may require pixi-skills updates. We pin
   rattler to specific minor versions and test against them in CI.
+  (Recent example of churn: lockfile v7 landed across pixi +
+  py-rattler in 2026 — a breaking change requiring ecosystem-wide
+  coordination. Expect similar waves; budget for them.)
 - pixi's extension model is stable — our binary naming convention
   (`pixi-skills`) is a stable interface.
 - conda package format is extremely stable (hasn't changed in years).

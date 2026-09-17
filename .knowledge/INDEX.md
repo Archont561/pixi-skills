@@ -6,7 +6,7 @@ tags: [index, navigation, overview]
 relates_to: []
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # pixi-skills — Knowledge Base Index
@@ -58,9 +58,10 @@ ecosystem. Our differentiation — lockfiles, reproducibility, supply
 chain security, multi-language support.
 
 ### 📐 [Conventions](./conventions/INDEX.md)
-Project-wide conventions: conventional commits + scopes, the
-`SKILL.md` format and TOML frontmatter schema, crate/package/file
-naming rules, and the config file map.
+Project-wide conventions: conventional commits + scopes, the skill
+format (agentskills.io folder spec + YAML frontmatter + companion
+`skill.toml`, per ADR-008), crate/package/file naming rules, and the
+config file map.
 
 ### 🗺️ [Roadmap](./roadmap/INDEX.md)
 MVP phases (Phase 0–5), milestone definitions, and priority ordering.

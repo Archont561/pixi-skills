@@ -7,7 +7,7 @@ relates_to:
   - roadmap/mvp-phases
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Landscape — Index
@@ -18,11 +18,18 @@ short — informs our design choices and positioning.
 
 ## Pages
 
+### [agent-skills-standard.md](./agent-skills-standard.md)
+**Read first.** The agentskills.io open standard (2025-12-18):
+folder-shaped skills, YAML frontmatter, progressive disclosure,
+converged agent paths, and the security context. 26+ platforms
+conform. Drives our format decisions.
+
 ### [skills-sh.md](./skills-sh.md)
-The incumbent: `skills.sh` / `npx skills`. GitHub-as-registry model,
-no version pinning, no lockfile. How it works, what it does well
-(instant ecosystem, zero infra), and where it breaks down (vendored
-skills, no reproducibility, npm-only).
+The incumbent: `skills.sh` / `npx skills` by Vercel (launched
+2026-01-20). 83k+ skills, 70+ agents, Snyk directory scanning,
+project-scoped `skills-lock.json`. How it works, what it does well,
+and the weaknesses that remain (no semver resolution, git-only
+provider, no private channels, npm/Node required).
 
 ### [npm-skills.md](./npm-skills.md)
 Anthony Fu's `npm-skills` approach: shipping agent skills inside npm

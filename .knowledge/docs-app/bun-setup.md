@@ -10,7 +10,7 @@ relates_to:
   - pixi/conda-forge-packages
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Bun Setup
@@ -29,7 +29,7 @@ dependency:
 ```toml
 # pixi.toml
 [feature.docs.dependencies]
-bun = ">=1.1"
+bun = ">=1.2"
 ```
 
 This means:
@@ -37,6 +37,13 @@ This means:
 - Bun version is pinned in `pixi.lock`
 - Every developer and CI runner uses the exact same bun version
 - No `curl -fsSL https://bun.sh/install | bash` needed
+
+> **Updated 2026-09-17:** floor raised from 1.1 → 1.2. The 1.4.x line
+> is current as of mid-2026 and brings near-complete Node.js API
+> compatibility (~99%+ of the top-1000 npm packages run on Bun), a
+> faster test runner with parallel execution, and native Windows ARM64
+> support. The locale/compat issues from the 1.1 era (see "Known
+> Historical Gotchas" below) are long resolved.
 
 ### Accessing bun
 
@@ -122,8 +129,9 @@ fully implement. Mitigation strategies:
 
 ```toml
 [feature.docs.dependencies]
-bun = ">=1.1"
-nodejs = ">=20"     # Fallback for compatibility
+bun = ">=1.2"
+nodejs = ">=22"     # Fallback for compatibility. Floor raised 20 → 22 (2026-09):
+                    # Astro 6 requires Node 22+; Node 24 is the Active LTS line.
 ```
 
 Node.js is available in the docs environment but not used by default.
@@ -140,7 +148,7 @@ docs-dev-node = { cmd = "npx astro dev", cwd = "apps/pixi-skills-docs" }
 If a specific bun version has a regression, pin it exactly:
 
 ```toml
-bun = "=1.1.38"     # Pinned due to issue #XYZ
+bun = "=1.2.21"     # Pinned due to issue #XYZ (example — use the actual known-good version)
 ```
 
 ---
@@ -153,8 +161,9 @@ bun = "=1.1.38"     # Pinned due to issue #XYZ
 a locale-related runtime difference. v0.23.4 was the last working
 version with that bun release.
 
-**Status**: likely resolved in newer bun versions (1.1+). If
-encountered, the fix is to update bun via pixi:
+**Status**: resolved long ago — Bun 1.2+ (and certainly the current
+1.4.x line) no longer exhibits this. Kept for historical reference
+only. If ever encountered, the fix is to update bun via pixi:
 
 ```bash
 pixi update bun    # Update to latest bun on conda-forge

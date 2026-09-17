@@ -10,7 +10,7 @@ relates_to:
   - pixi/conda-forge-packages
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Pixi Features
@@ -30,11 +30,18 @@ or tests Rust code includes this.
 
 ```toml
 [dependencies]
-rust = ">=1.80"
+rust = ">=1.85"          # 2024 edition stable since 1.85; current stable is 1.98.1 (Sep 2026)
 openssl = ">=3"
 pkg-config = ">=0.29"
 cmake = ">=3.28"
 ```
+
+> **Version snapshot (verified 2026-09-17):** Rust stable is 1.98.1;
+> the 2024 edition has been the default since Rust 1.85. The floor is
+> `>=1.85` (edition 2024) rather than the original `>=1.80`. Note that
+> building modern companion tooling from source may require newer
+> (e.g. cargo-deny 0.20 MSRV is Rust 1.88) — installing prebuilt
+> binaries from conda-forge sidesteps that.
 
 **Tasks owned**:
 - `build`, `build-release`
@@ -57,9 +64,9 @@ Additional linting tools beyond what ships with Rust.
 
 ```toml
 [feature.lint.dependencies]
-taplo = ">=0.9"
-cargo-deny = ">=0.16"
-cargo-nextest = ">=0.9"
+taplo = ">=0.9"            # 0.9.x line; upstream is low-activity, TOML 1.1 support pending
+cargo-deny = ">=0.20"      # 0.20.2 (2026-07); note source-build MSRV Rust 1.88
+cargo-nextest = ">=0.9"    # 0.9.x rolling series; latest 0.9.143 (2026-08)
 ```
 
 **Tasks owned**:
@@ -79,9 +86,14 @@ Everything needed for the documentation site.
 
 ```toml
 [feature.docs.dependencies]
-bun = ">=1.1"
-biome = ">=1.9"
+bun = ">=1.2"        # 1.4.x line current (2026); historical floor was 1.1
+biome = ">=2.3"      # 2.3+ lints/formats TS *and* CSS inside .astro files; latest 2.5.x
 ```
+
+> **Biome 2 note (2026):** Biome 2.0 landed mid-2025 with a new config
+> format (`biome migrate --write` upgrades `biome.json`). 2.3 added
+> full support for Astro/Vue/Svelte files, which is why the floor is
+> `>=2.3` for a Starlight docs app.
 
 **Tasks owned**:
 - `docs-install`, `docs-dev`, `docs-build-raw`, `docs-preview`, `docs-check`
