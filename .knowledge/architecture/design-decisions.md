@@ -38,6 +38,7 @@ considered, choice made, and consequences.
 > | ADR-007 | pixi extension | ✅ Unaffected |
 > | *(not an ADR)* | TOML frontmatter inside SKILL.md | ❌ **Superseded by ADR-008** — was never an ADR, lived only in conventions/skill-format.md |
 > | **ADR-008** | Adopt agentskills.io as the artifact format | 🆕 **Accepted 2026-09-17** |
+> | **ADR-009** | skills.sh ecosystem as a provider (P1) | 🆕 **Accepted 2026-09-17** |
 >
 > Rule going forward: **the skill artifact is owned by the standard;
 > the manager envelope is owned by us.** Any future decision that
@@ -415,6 +416,58 @@ for 26+ agents.
 
 ---
 
+## ADR-009: skills.sh Ecosystem as a Provider (Accept Proposal P1)
+
+**Status**: Accepted (2026-09-17) — ratifies proposal P1 from
+`roadmap/improvement-proposals.md`.
+
+### Context
+
+skills.sh (Vercel) is the ecosystem's gravity well: 83k+ indexed
+skills, 8M+ installs, a curated leaderboard with Snyk scanning, and
+a public index (see `landscape/skills-sh.md`). Our original framing
+treated it purely as the competitor to out-differentiate. Proposal
+P1 argued the stronger play: **they own discovery; we own the
+lifecycle.** Skills installed from their corpus still get *our*
+lockfile, semantic resolution, audit pipeline, and folder-pure
+installs.
+
+### Options Considered
+
+| Option | Pros | Cons |
+|---|---|---|
+| **(a) Ignore the index** — GitHub-native search only | Zero third-party dependency | No ranked/curated discovery across 83k+ skills; forfeits the "meet users where they are" adoption path |
+| **(b) Compete** — build our own portal/index | Full control, owned data | Duplicates existing gravity; explicitly a 2026 non-goal; large ongoing cost |
+| **(c) Accept skills.sh as a provider backend** | Instant curated coverage; reframes competition as "the enterprise shell around the ecosystem"; index is public | External availability dependency — mitigated by graceful degradation (below) |
+
+### Decision
+
+**(c) — accept skills.sh as a provider source, implemented *within*
+`skills-provider-github`** (search via the skills.sh public index;
+fetch via the existing git backend). **Not a separate crate**:
+skills.sh sources *are* git repos, so a `skills-provider-skillssh`
+crate would duplicate the fetch/cache/tree-hash machinery. The trait
+seam is the search index, not the transport.
+
+**Graceful degradation**: if the skills.sh index is unreachable or
+its API shape changes, `search` falls back to GitHub code/topic
+search; `pixi skills doctor` surfaces the degraded mode. Fetching,
+locking, and installing are index-independent.
+
+### Consequences
+
+- `skills-provider-github.md` search strategy 1 (skills.sh index) is
+  now **normative**, no longer marked "prop. P1".
+- Phase 1 (MVP) deliverables already listed the index integration;
+  Definition of Done gains: *index outage degrades search gracefully,
+  never blocks add/lock/install*.
+- Building a public skills portal/leaderboard remains a **non-goal
+  for 2026** (revisit only with the P6 agent-capability work).
+- Competitive framing in `landscape/differentiation.md` stands:
+  integrate, don't fight.
+
+---
+
 ## Decision Log (Summary)
 
 | ADR | Decision | Status |
@@ -428,3 +481,4 @@ for 26+ agents.
 | ADR-007 | pixi extension model | Accepted |
 | — | TOML frontmatter in SKILL.md | **Superseded by ADR-008** (2026-09) |
 | ADR-008 | Adopt agentskills.io format (folder unit, YAML frontmatter, companion `skill.toml`, tree hash) | **Accepted 2026-09-17** |
+| ADR-009 | skills.sh ecosystem as provider; index search inside `skills-provider-github`; portal stays non-goal | **Accepted 2026-09-17** |

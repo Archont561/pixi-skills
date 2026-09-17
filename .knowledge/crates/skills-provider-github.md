@@ -121,7 +121,8 @@ GitHub search has limitations for skill discovery:
 ```rust
 async fn search(&self, query: &str) -> Result<Vec<SkillSummary>> {
     // Strategy 1: skills.sh public index (83k+ skills, leaderboard
-    //   signals) — consumed as a regular provider backend (prop. P1)
+    //   signals) — the normative search backend (ADR-009), with
+    //   graceful degradation to strategies 2-3 on outage
     //
     // Strategy 2: GitHub code search for SKILL.md files
     // GET /search/code?q={query}+filename:SKILL.md

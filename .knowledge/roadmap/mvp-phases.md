@@ -111,7 +111,8 @@ skills.sh ecosystem.
 - [ ] `@skill` multi-skill repo selector (`skills/<name>/` probing)
 - [ ] SKILL.md **YAML frontmatter** parsing (spec fields)
 - [ ] Canonical **tree hash** computation
-- [ ] Search via GitHub code search / topic search / **skills.sh index**
+- [ ] Search via **skills.sh public index (ADR-009, normative)** —
+  graceful degradation to GitHub code/topic search on index outage
 - [ ] Rate limit handling (with/without `GITHUB_TOKEN`)
 - [ ] Local caching keyed by commit SHA + skill path
 - [ ] Unit tests with mocked API responses
@@ -128,6 +129,8 @@ skills.sh ecosystem.
 - Works with and without `GITHUB_TOKEN`
 - Handles rate limiting gracefully
 - Passes compatibility tests with skills.sh ecosystem repos (ADR-008)
+- **Index outage degrades search gracefully — `add`/`lock`/`install`
+  never depend on the skills.sh index (ADR-009)**
 
 ### Key Risks
 

@@ -21,10 +21,11 @@ refresh. Each is presented as a **mental model**, not an
 implementation — graphs and pseudocode only. Sequencing guidance maps
 onto the existing [MVP phases](./mvp-phases.md).
 
-> **✅ Adoption status (2026-09-17): P0 and P4 are ACCEPTED** — see
-> **ADR-008** (`architecture/design-decisions.md`) and the rewritten
-> `conventions/skill-format.md`. Their content below is kept as the
-> design rationale. P1/P2/P3/P5/P6/P7 remain proposals.
+> **✅ Adoption status (2026-09-17): P0, P1 and P4 are ACCEPTED** —
+> **P0/P4 → ADR-008**, **P1 → ADR-009** (index search folded into
+> `skills-provider-github`; separate provider crate rejected).
+> **P2 and P3 remain the open proposals** (P5/P6/P7 deferred with
+> their phase gates). Content below is design rationale.
 
 ### Trigger: what changed in the world
 
@@ -52,7 +53,7 @@ Conclusion: keep the mission, re-aim the differentiators.
 | # | Proposal | Type | Impact | Effort | Phase fit | Status |
 |---|---|---|---|---|---|---|
 | P0 | Folder-shaped, spec-native skill packaging (agentskills.io) | Format foundation | 🔥🔥🔥 | M | Phase 0 | ✅ **ADR-008** |
-| P1 | skills.sh as a *provider* (`@skill` sources, their index) — meet users where they are | Adoption | 🔥🔥🔥 | S | Phase 1+ | ⏳ proposal |
+| P1 | skills.sh as a *provider* (`@skill` sources, their index) — meet users where they are | Adoption | 🔥🔥🔥 | S | Phase 1+ | ✅ **ADR-009** |
 | P2 | Manifest/lock split with **semantic** version resolution | Core differentiator | 🔥🔥🔥 | M | Phase 4 | ⏳ proposal |
 | P3 | Skill trust pipeline: lint → verify → policy (`skills audit`) | Security moat | 🔥🔥🔥 | M | Phase 4+ | ⏳ proposal |
 | P4 | Provider trait v2: versions(), folder bundles, content hashes | Enabler | 🔥🔥 | S | Phase 0/1 | ✅ **ADR-008** |
@@ -204,6 +205,13 @@ here" is the launch-story headline.
 ---
 
 ## P1 — skills.sh as a *provider*: adopt, don't fight
+
+**Status: ✅ ACCEPTED 2026-09-17 as ADR-009.** Design refinement from
+the accepted decision: the index search folds **into
+`skills-provider-github`** (no separate crate — the trait seam is
+the search index, not the transport), with graceful degradation to
+GitHub-native search on index outage. Public portal stays a 2026
+non-goal. Original rationale below.
 
 They own discovery (83k skills, the leaderboard). We own
 lifecycle. A `skills-provider-skillssh` crate wraps their public
