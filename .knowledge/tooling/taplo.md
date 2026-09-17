@@ -9,7 +9,7 @@ relates_to:
   - conventions/config-files
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Taplo
@@ -31,6 +31,14 @@ taplo = ">=0.9"
 
 Installed via pixi from conda-forge. Available in the `default` and
 `all` environments (via the `lint` feature).
+
+> **Maintenance note (2026-09-17):** taplo upstream has been
+> low-activity since ~2024; the CLI is still on the 0.9.x line and
+> TOML 1.1 syntax support is only landing piecemeal via community PRs.
+> The tool works fine today, but if TOML 1.1 features (e.g. multiline
+> inline tables) start appearing in our manifests, re-evaluate:
+> options are contributing to taplo, forking, or moving TOML
+> formatting into xtask via the `tap`/`toml_edit` crates.
 
 ---
 

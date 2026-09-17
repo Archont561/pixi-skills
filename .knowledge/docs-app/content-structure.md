@@ -9,7 +9,7 @@ relates_to:
   - crates/xtask
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Content Structure
@@ -106,7 +106,7 @@ follow-up.
 
 | Page | Content |
 |---|---|
-| `creating-a-skill.mdx` | Step-by-step: write SKILL.md, add TOML frontmatter, test locally, publish. |
+| `creating-a-skill.mdx` | Step-by-step: scaffold a skill folder (`pixi skills init`), write SKILL.md with YAML frontmatter, add `skill.toml`, lint, test locally, publish. |
 | `publishing-conda.mdx` | Create a `skill-*` conda package using rattler-build, publish to conda-forge or a private channel. |
 | `publishing-github.mdx` | Publish a skill as a GitHub repo. Naming conventions, tagging versions, SKILL.md placement. |
 | `private-channels.mdx` | Set up a private conda channel on prefix.dev or Artifactory. Configure auth. Install skills from private channels. |
@@ -160,8 +160,9 @@ actual source (referenced, not copied — links to source files).
 | Page | Content |
 |---|---|
 | `skills-toml.mdx` | Complete specification for `skills.toml`. Every field, its type, default value, and example. JSON Schema link. |
+| `skill-toml.mdx` | Complete specification for the companion `skill.toml` envelope (schema v1): fields, validation rules, evolution policy. Mirrors conventions/skill-toml.md. |
 | `skills-lock-toml.mdx` | Complete specification for `skills-lock.toml`. File format, fields, integrity model. |
-| `skill-md-format.mdx` | The SKILL.md file format: TOML frontmatter schema, markdown body conventions, examples for each agent. |
+| `skill-md-format.mdx` | The skill folder format (agentskills.io spec, ADR-008): YAML frontmatter schema, progressive-disclosure budgets, the companion `skill.toml`, packaging shapes per provider. |
 | `environment-variables.mdx` | All environment variables pixi-skills reads: `GITHUB_TOKEN`, `PREFIX_DEV_TOKEN`, `PIXI_SKILLS_CACHE_DIR`, etc. |
 
 **Design**: table-heavy, exhaustive. Every field is documented. This

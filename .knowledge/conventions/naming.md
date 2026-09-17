@@ -10,7 +10,7 @@ relates_to:
   - architecture/design-decisions
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Naming Conventions
@@ -64,8 +64,12 @@ Consistent naming across all layers of the pixi-skills project.
 
 - Always `skill-` prefix (not `pixi-skill-`, not `skills-`)
 - Lowercase with hyphens
-- Name matches the `name` field in SKILL.md frontmatter
-- Always `noarch` (skills are platform-independent markdown)
+- Package suffix matches the **skill folder name**, which per the
+  agentskills.io standard MUST equal the `name` field in the SKILL.md
+  YAML frontmatter: `skill-playwright` ↔ `skills/playwright/` ↔
+  `name: playwright` (updated 2026-09, ADR-008)
+- Always `noarch` (skills are platform-independent folders of
+  markdown/scripts)
 
 ---
 
@@ -98,7 +102,8 @@ Consistent naming across all layers of the pixi-skills project.
 |---|---|---|
 | Rust source files | snake_case | `skill.rs`, `registry.rs` |
 | Config files | Tool-standard naming | `pixi.toml`, `Cargo.toml`, `biome.json` |
-| Skill files | UPPER or kebab-case | `SKILL.md`, `playwright.md` |
+| Skill folders | kebab-case, == frontmatter `name` | `playwright/`, `web-design-guidelines/` |
+| Skill files | spec-standard inside the folder | `SKILL.md`, `skill.toml`, `scripts/*.sh`, `references/*.md` |
 | Knowledge base | kebab-case | `workspace-layout.md`, `three-layer-model.md` |
 | Directories | kebab-case | `skills-core/`, `pixi-skills-docs/` |
 | Generated files | Tool-standard | `pixi-skills.bash`, `_pixi-skills.ps1` |

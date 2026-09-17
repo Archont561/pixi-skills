@@ -10,7 +10,7 @@ relates_to:
   - architecture/dependency-graph
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # MVP Phases
@@ -45,16 +45,24 @@ No providers, no CLI — just the library.
 ### Deliverables
 
 - [ ] `Skill`, `SkillId`, `SkillSummary`, `SkillSource` types
-- [ ] `SkillVersion`, `VersionReq`, `ContentHash` types
-- [ ] `SkillRegistry` trait definition
-- [ ] `SkillsManifest` (skills.toml) parser
-- [ ] `SkillsLockfile` (skills-lock.toml) parser
-- [ ] `SkillInstaller` — install/uninstall to agent directories
-- [ ] `AgentDetector` — detect installed agents
+- [ ] `SkillVersion`, `VersionReq`, `TreeHash` types
+- [ ] **`SkillBundle` folder model** (BTreeMap file tree) + canonical
+  tree-hash computation *(ADR-008, adopted 2026-09)*
+- [ ] **`SkillMetadata` = YAML frontmatter parser** (spec fields,
+  unknown preserved) + **companion `skill.toml` envelope parser**
+- [ ] `SkillRegistry` trait definition (returns bundles, not files)
+- [ ] `SkillsManifest` (skills.toml) parser — incl. `skill=` selector
+  and semver-range refs
+- [ ] `SkillsLockfile` (skills-lock.toml) parser — format v2 (tree_hash)
+- [ ] `SkillInstaller` — install/uninstall skill **folders** to agent
+  directories (exclude `skill.toml`, pass `agents/*.yaml` through)
+- [ ] `AgentDetector` — detect installed agents; post-standard paths
+  (`.agents/skills/`, `.github/skills/`, ...) via data-driven
+  `default_agents.toml`
 - [ ] `Config` — layered configuration loading
-- [ ] `SkillsError` — error type hierarchy
+- [ ] `SkillsError` — error type hierarchy (YAML + bundle variants)
 - [ ] Unit tests for all types and parsing
-- [ ] Integration tests with fixture directories
+- [ ] Integration tests with fixture directories (folder bundles)
 - [ ] Crate documentation (`///` doc comments)
 
 ### Definition of Done
@@ -68,9 +76,14 @@ No providers, no CLI — just the library.
 
 - **Trait design**: `SkillRegistry` must be general enough for all
   providers. Risk of redesign when the second provider is implemented.
-  Mitigation: implement a mock provider in tests.
+  Mitigation: implement a mock provider in tests. *(2026-09: risk
+  partially retired — trait v2 bundle/hash surface now designed in
+  `roadmap/improvement-proposals.md` P4 and ADR-008 consequences.)*
 - **Agent path churn**: agent config directories change frequently.
-  Mitigation: make paths configurable, not hardcoded.
+  Mitigation: paths configurable + data-driven map
+  (`default_agents.toml`, self-updatable). *Validated 2026-09: the
+  standard converged paths, but the 70+ agent long tail keeps this
+  risk alive.*
 
 ### Dependencies
 
@@ -92,24 +105,29 @@ skills.sh ecosystem.
 ### Deliverables
 
 - [ ] `GitHubRegistry` implementing `SkillRegistry`
-- [ ] Ref resolution (branch → SHA, tag → SHA)
-- [ ] Raw content fetching (via GitHub API or raw.githubusercontent.com)
-- [ ] SKILL.md frontmatter parsing
-- [ ] Content hash computation
-- [ ] Search via GitHub code search / topic search
+- [ ] Ref resolution (branch → SHA, tag → SHA, **semver range → tag**)
+- [ ] **Folder tree fetching** (Git Trees API recursive, or codeload
+  tarball subtree) for the skill folder
+- [ ] `@skill` multi-skill repo selector (`skills/<name>/` probing)
+- [ ] SKILL.md **YAML frontmatter** parsing (spec fields)
+- [ ] Canonical **tree hash** computation
+- [ ] Search via GitHub code search / topic search / **skills.sh index**
 - [ ] Rate limit handling (with/without `GITHUB_TOKEN`)
-- [ ] Local caching keyed by commit SHA
+- [ ] Local caching keyed by commit SHA + skill path
 - [ ] Unit tests with mocked API responses
 - [ ] Integration test with a real public skill repo (gated)
-- [ ] Compatibility test with 3+ existing skills.sh repos
+- [ ] Compatibility test with 3+ skills.sh-era spec repos
+  (e.g. vercel-labs/agent-skills, anthropics/skills) covering
+  folder skills incl. `scripts/`/`references/`
 
 ### Definition of Done
 
-- Can fetch any SKILL.md from a public GitHub repo
-- Can resolve tags and branches to commit SHAs
+- Can fetch any skill **folder** from a public GitHub repo
+- Can resolve tags and branches to commit SHAs; semver ranges resolve
+  over `[v]X.Y.Z` tags
 - Works with and without `GITHUB_TOKEN`
 - Handles rate limiting gracefully
-- Passes compatibility tests with skills.sh repos
+- Passes compatibility tests with skills.sh ecosystem repos (ADR-008)
 
 ### Key Risks
 
@@ -192,13 +210,16 @@ delivers pixi-skills' key differentiators.
 - [ ] Package name filtering (`skill-*` prefix)
 - [ ] Version resolution via `MatchSpec`
 - [ ] Package download and extraction via `rattler_package_streaming`
-- [ ] Skill content extraction from package archives
+- [ ] Skill **folder** extraction (`skills/<name>/**`) from package
+  archives *(ADR-002 amended: folder payload)*
 - [ ] Private channel support via `rattler_networking`
 - [ ] Search across multiple channels
 - [ ] Unit tests with fixture repodata and `.conda` packages
 - [ ] Integration test with conda-forge (gated)
 - [ ] Document the `skill-*` package format for authors
-- [ ] Create one example skill package with rattler-build
+  (folder tree + `skill.toml` envelope conventions)
+- [ ] Create one example skill package with rattler-build — a
+  spec-compliant folder skill incl. `scripts/` + `references/` *(ADR-008)*
 
 ### Definition of Done
 
@@ -235,10 +256,12 @@ resolves all skills to exact versions with content hashes.
 
 ### Deliverables
 
-- [ ] `lock` subcommand — generate/update `skills-lock.toml`
+- [ ] `lock` subcommand — generate/update `skills-lock.toml` (format v2)
 - [ ] `update` subcommand — update skills to latest matching versions
+- [ ] `check` subcommand — report available updates without applying
+  (skills.sh parity; = dry-run solve)
 - [ ] Lockfile generation from `skills.toml` manifest
-- [ ] Content hash verification on install
+- [ ] **Tree hash** verification on install
 - [ ] Stale lockfile detection (`doctor` enhancement)
 - [ ] Lockfile diff-friendly output (deterministic TOML serialization)
 - [ ] `--frozen` flag — fail if lockfile doesn't exist or is stale
@@ -249,9 +272,10 @@ resolves all skills to exact versions with content hashes.
 - `pixi skills lock` produces a deterministic `skills-lock.toml`
 - `pixi skills add` updates the lockfile
 - `pixi skills update` resolves to newer versions within constraints
-- `pixi skills doctor` detects stale lockfiles and hash mismatches
+- `pixi skills doctor` detects stale lockfiles, tree-hash mismatches,
+  AND pre-standard legacy installs (offers migration)
 - Two fresh clones with the same lockfile produce identical skill
-  installations
+  installations (byte-identical folder trees)
 
 ### Key Risks
 

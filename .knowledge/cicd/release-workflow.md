@@ -11,7 +11,7 @@ relates_to:
   - conventions/commit-conventions
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Release Workflow
@@ -177,9 +177,9 @@ jobs:
             os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: prefix-dev/setup-pixi@v0.8
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
           environments: release
           cache: true
@@ -188,7 +188,7 @@ jobs:
         run: pixi run -e release dist -- --target ${{ matrix.target }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist-${{ matrix.target }}
           path: dist/
@@ -198,10 +198,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist/
           merge-multiple: true
@@ -221,9 +221,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: prefix-dev/setup-pixi@v0.8
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
           environments: release
           cache: true

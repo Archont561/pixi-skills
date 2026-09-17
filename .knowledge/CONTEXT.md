@@ -9,7 +9,7 @@ relates_to:
   - roadmap/mvp-phases
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # pixi-skills — Project Context
@@ -19,10 +19,14 @@ updated: 2025-01-01
 `pixi-skills` is a **provider-agnostic, reproducible skills manager**
 for AI coding agents (Claude Code, Cursor, GitHub Copilot, Codex, etc.).
 
-Skills are markdown files — typically `SKILL.md` — that teach AI agents
+Skills are **folders following the agentskills.io open standard** —
+a `SKILL.md` (YAML frontmatter + markdown instructions) plus optional
+`scripts/`, `references/`, `assets/` — that teach AI agents
 domain-specific knowledge: how to use an API, how your codebase is
 structured, how to run certain tasks. They are to AI agents what
-man pages are to humans.
+man pages are to humans. pixi-skills manages the lifecycle
+*(we adopted the standard on 2026-09-17 — ADR-008)*; the artifact
+format belongs to the ecosystem.
 
 `pixi-skills` manages these skills the same way cargo manages Rust
 crates or pixi manages conda packages: with **versioning, lockfiles,
@@ -33,11 +37,19 @@ reproducibility, and supply chain security**.
 ## What Problem It Solves
 
 ### The skills.sh problem
-The incumbent tool (`skills.sh` / `npx skills`) is npm-only and uses
-GitHub as a registry with no version pinning. Skills are fetched from
-`main` — no lockfile, no version constraint, no reproducibility.
-Skills end up vendored into repositories, polluting git history with
-markdown diffs you didn't write.
+The incumbent tool (`skills.sh` / `npx skills`, Vercel) made Git the
+registry — massively successful (83k+ skills, 8M+ installs, 70+
+agents since its 2026-01 launch) — but skills are still installed
+**without semantic version constraints**: no `^1.2` resolution, no
+manifest/lock split, no private channels, no offline mode, and
+npm/Node required. Its `skills-lock.json` (added in 2026) detects
+content drift after the fact; it cannot express or enforce upgrade
+policy. Skills end up vendored into agent directories, updated
+invisibly, unaudited.
+
+*(Revised 2026-09-17 — see `landscape/skills-sh.md` for the full
+current-state analysis; older revisions of this page described the
+pre-launch skills.sh with no lockfile at all.)*
 
 ### The pixi-skills solution
 - **Lockfile-first**: `skills-lock.toml` pins exact versions and hashes.
@@ -86,8 +98,14 @@ pixi-skills/
 ### Language runtimes (both provided by pixi from conda-forge)
 | Runtime | Used for |
 |---|---|
-| Rust ≥ 1.80 | All crates + xtask automation |
-| Bun ≥ 1.1 | Astro Starlight docs site |
+| Rust ≥ 1.85 (edition 2024; stable is 1.98.1 as of 2026-09) | All crates + xtask automation |
+| Bun ≥ 1.2 (1.4.x line current as of 2026) | Astro Starlight docs site |
+
+> Versions in this section last verified **2026-09-17**. See
+> `pixi/conda-forge-packages.md` for the full package table and
+> `landscape/agent-skills-standard.md` for the industry-standard
+> SKILL.md spec (agentskills.io, adopted 2025-12-18) that our
+> `conventions/skill-format.md` is being reconciled with.
 
 ### Rust crates (workspace members)
 | Crate | Role |
@@ -103,8 +121,8 @@ pixi-skills/
 ### JS/TS stack
 | Package | Role |
 |---|---|
-| Astro v5 | Docs site framework |
-| @astrojs/starlight | Docs theme + navigation |
+| Astro v6 (v7 available since 2026 — plan upgrade) | Docs site framework |
+| @astrojs/starlight ≥ 0.38 (Astro 6 support) | Docs theme + navigation |
 | @astrojs/check | TypeScript checking for .astro files |
 
 ### Developer tooling (all provisioned by pixi from conda-forge)

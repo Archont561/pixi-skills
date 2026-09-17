@@ -8,7 +8,7 @@ relates_to:
   - docs-app/content-structure
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Custom Components
@@ -240,8 +240,10 @@ Offline support   ✅            ❌          ❌
 
 ## `<SkillFormatPreview />`
 
-Shows a SKILL.md file with TOML frontmatter, with annotations
-explaining each section. Used on the `skill-md-format` reference page.
+Shows a SKILL.md file with YAML frontmatter (agentskills.io spec),
+with annotations explaining each section. Used on the
+`skill-md-format` reference page. *(Updated 2026-09, ADR-008:
+example migrated from the old TOML frontmatter to spec YAML.)*
 
 ### Props
 
@@ -257,10 +259,10 @@ import SkillFormatPreview from '../../components/SkillFormatPreview.astro';
 
 <SkillFormatPreview
   content={`---
-name = "playwright"
-version = "1.0.0"
-agents = ["claude", "cursor"]
-tags = ["testing", "browser"]
+name: playwright
+description: Playwright testing patterns for browser automation.
+  Use when writing or debugging end-to-end browser tests.
+license: MIT
 ---
 
 # Playwright Testing Patterns
@@ -268,7 +270,7 @@ tags = ["testing", "browser"]
 When writing Playwright tests, always use...
 `}
   annotations={[
-    { lines: '1-5', label: 'TOML frontmatter (optional)' },
+    { lines: '1-5', label: 'YAML frontmatter (spec fields)' },
     { lines: '7-9', label: 'Markdown body (the skill content)' },
   ]}
 />

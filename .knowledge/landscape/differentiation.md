@@ -11,7 +11,7 @@ relates_to:
   - roadmap/mvp-phases
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Differentiation
@@ -19,39 +19,56 @@ updated: 2025-01-01
 Our competitive advantages and market positioning. Why pixi-skills
 exists and why users should choose it over alternatives.
 
+> **Revised 2026-09-17.** The landscape moved: skills.sh (Vercel)
+> launched 2026-01-20 and now has 83k+ skills, 70+ agent targets,
+> Snyk directory scanning, and a project-scoped `skills-lock.json`
+> with content hashes. Community tools (`skills-lock`, `paks`) add
+> SHA pinning. Meanwhile Anthropic published **Agent Skills as an
+> open standard** (agentskills.io, 2025-12-18) adopted by 26+
+> platforms. Our differentiators below have been re-ranked
+> accordingly: reproducibility is now necessary-but-not-sufficient;
+> the defensible lanes are **semantic versioning**, **provider
+> breadth**, **enterprise enforcement**, and **standards-compliant
+> packaging**.
+
 ---
 
 ## Competitive Comparison Matrix
 
-| Dimension | pixi-skills | skills.sh | npm-skills | Manual copy-paste |
+| Dimension | pixi-skills | skills.sh (2026) | npm-skills / skills-lock | Manual copy-paste |
 |---|---|---|---|---|
-| **Version pinning** | ✅ Lockfile with exact versions + hashes | ❌ Fetches from `main` | ⚠️ Via package.json (coupled to package version) | ❌ No versioning |
-| **Lockfile** | ✅ `skills-lock.toml` | ❌ None | ⚠️ `package-lock.json` (not skill-specific) | ❌ None |
-| **Reproducibility** | ✅ Content-hashed, deterministic | ❌ Time-dependent | ⚠️ Reproducible within npm, not cross-ecosystem | ❌ None |
-| **Multi-provider** | ✅ GitHub + conda + prefix.dev + PyPI | ❌ GitHub only | ❌ npm only | ❌ Manual |
-| **Multi-language** | ✅ Any language (conda ecosystem) | ❌ npm/JS only | ❌ npm/JS only | ✅ Language-agnostic (manual) |
-| **Private sources** | ✅ Private conda channels, prefix.dev orgs | ❌ Public GitHub only | ⚠️ Private npm registries | ❌ Manual |
-| **Offline support** | ✅ pixi-pack integration | ❌ None | ❌ None | ✅ Already local |
-| **Supply chain** | ✅ Content hashes, conda signing (future) | ❌ Trusts GitHub repos | ⚠️ npm audit (for package, not skill content) | ❌ None |
-| **Agent support** | ✅ Configurable, extensible | ✅ 16+ agents | ⚠️ Limited | ✅ Manual per agent |
-| **Ecosystem size** | ⚠️ New (growing via GitHub compat) | ✅ Largest | ⚠️ Small | ∞ (anything is a skill) |
-| **Install method** | pixi global install | npx | npm install | copy-paste |
+| **Version constraints** (semver ranges, `^1.2` resolution) | ✅ Manifest + solver | ❌ Refs in URLs only; `update` = jump to latest | ⚠️ package.json semver (coupled to package, not skill) | ❌ No versioning |
+| **Lockfile** | ✅ `skills-lock.toml`: constraint resolution + content hashes | ⚠️ `skills-lock.json`: hashes of whatever was installed (no constraints) | ⚠️ `skills-lock.json` / package-lock | ❌ None |
+| **Reproducibility** | ✅ Content-hashed, deterministic | ⚠️ Hash drift *detection*, no version *control* | ⚠️ Reproducible within npm, not cross-ecosystem | ❌ None |
+| **Integrity enforcement** | ✅ Hash verify on every install; signatures planned | ⚠️ Snyk scans the *directory listing*; enforcement advisory | ⚠️ npm audit (package, not skill content) | ❌ None |
+| **Multi-provider** | ✅ GitHub + conda + prefix.dev + PyPI | ❌ git only | ❌ npm / git only | ❌ Manual |
+| **Multi-language** | ✅ Any language (conda ecosystem) | ❌ JS runtime required | ❌ npm/JS only | ✅ Language-agnostic (manual) |
+| **Private sources** | ✅ Private conda channels, prefix.dev orgs, SSO authz | ❌ Public git only (private repos need per-user git creds) | ⚠️ Private npm registries | ❌ Manual |
+| **Offline/airgap** | ✅ pixi-pack bundles, local channels | ❌ None | ❌ None | ✅ Already local |
+| **Org policy** (allow/deny lists, audit trail) | ✅ Lockfile is the audit artifact; policy file planned | ❌ None | ⚠️ Enterprise npm proxies only | ❌ None |
+| **Agent support** | ✅ Configurable, extensible | ✅ 70+ agents (best-in-class) | ⚠️ Limited | ✅ Manual per agent |
+| **Ecosystem size** | ⚠️ New (growing via GitHub compat) | ✅ Largest — 83k+ skills, 8M+ installs | ⚠️ Small | ∞ (anything is a skill) |
+| **Standards compliance** | ✅ agentskills.io spec + extended metadata | ✅ Native (Vercel co-developed the ecosystem) | ⚠️ Varies | ⚠️ DIY |
 | **No JS required** | ✅ | ❌ | ❌ | ✅ |
 
 ---
 
 ## Five Key Differentiators
 
-### 1. Lockfile-First Reproducibility
+### 1. Manifest + Lockfile Version Resolution
 
-The single most important differentiator. No other skill manager
-has a lockfile.
+Reproducibility shifted from "nobody has it" to "table stakes" in
+2026 (skills.sh's `skills-lock.json`, community `skills-lock`
+wrappers). Our refinement: **a real manifest/lock split with
+semantic version constraints** — the thing git-hash pinners
+structurally cannot do.
 
 **What it means**:
-- `skills-lock.toml` records the exact version and content hash of
-  every installed skill
-- Running `pixi skills lock` on any machine at any time resolves to
-  the same skill versions
+- `skills.toml` records intent (`playwright = "^1.2"`),
+  `skills-lock.toml` records the resolved exact version + content hash
+- Upgrade policy is explicit: `pixi skills update` moves within
+  declared constraints; nothing moves silently
+- Hash verification on *every* install, not just drift reports
 - The lockfile is committed to git — every team member, CI run, and
   deployment gets identical skills
 
@@ -59,6 +76,8 @@ has a lockfile.
 - AI agent behavior depends on skill content. Different skills =
   different agent behavior. Non-reproducible skills = non-reproducible
   agent behavior.
+- Hash-only locks answer "did it change?" — version constraints answer
+  "what may change without my review?" Enterprises need the second.
 - In enterprise environments, auditability requires knowing exactly
   what content was fed to an AI agent at any point in time.
 
@@ -145,33 +164,39 @@ It is a standalone Rust binary installable via pixi or cargo.
 
 ## Market Timing
 
-### Why now?
+### Why now? (revised 2026-09)
 
-1. **AI coding agents are proliferating** (Claude Code, Cursor, Copilot,
-   Codex, Windsurf, Cline, Aider). Each has its own skill/rules format.
-   A unified manager becomes more valuable as the agent landscape
-   fragments.
+1. **Agent Skills are an open standard now** (agentskills.io,
+   2025-12-18; 26+ platforms incl. Claude, Codex, Gemini CLI, Copilot,
+   Cursor, VS Code). Format convergence *increases* the value of a
+   manager — one portable artifact format means one manager can serve
+   every agent. See `landscape/agent-skills-standard.md`.
 
-2. **Skills are becoming a shared artifact**. Early skills were project-
-   specific. Now teams share skills across projects, and communities
-   publish skills for popular frameworks. Package management is the
-   natural evolution.
+2. **Package management is the proven next step**. skills.sh hit 8M+
+   installs in ~8 months; community lockfile wrappers appeared within
+   weeks of launch. The market explicitly wants reproducibility —
+   and is currently hacking it on top of git.
 
-3. **The pixi ecosystem is mature enough**. rattler crates are stable.
-   pixi extensions are supported. conda-forge has the tooling
-   infrastructure. The building blocks exist.
+3. **Security incidents created the enterprise opening**. Community
+   skill registries have already seen malware campaigns (ClawHavoc)
+   and double-digit percentages of critically-insecure skills. Snyk
+   directory scanning is advisory; enforcement (signed packages,
+   org policy, airgapped distribution) is unserved.
 
-4. **skills.sh validated the concept** but left major gaps (no versioning,
-   no lockfile, npm-only). The market is educated but underserved.
+4. **The pixi ecosystem is mature enough**. rattler crates are stable
+   and fast-moving (rattler_conda_types 0.50, lockfile v7). pixi
+   extensions are supported. conda-forge has the infrastructure.
 
 ### Why us?
 
 - We're building in Rust on the rattler ecosystem — the fastest,
   most modern conda implementation
-- We're designing for reproducibility from day one, not bolting it
-  on later
+- We're designing for semantic reproducibility from day one, not
+  retrofitting hashes onto branch-following
 - We're provider-agnostic from the start, not trying to widen a
   single-source tool later
 - We understand the enterprise requirements (private channels,
   offline support, audit trails) because we come from the pixi/conda
   world where these are table stakes
+- We track the agentskills.io standard so a pixi-managed skill works
+  in all 26+ conforming agents — portability is compliance, not luck

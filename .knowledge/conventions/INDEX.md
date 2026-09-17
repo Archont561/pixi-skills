@@ -8,7 +8,7 @@ relates_to:
   - crates/CONTEXT
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Conventions — Index
@@ -25,9 +25,18 @@ Conventional commit format, allowed types (`feat`, `fix`, `docs`,
 change notation, and how convco enforces these rules.
 
 ### [skill-format.md](./skill-format.md)
-The `SKILL.md` specification: TOML frontmatter schema (metadata fields,
-agent compatibility, version, dependencies on other skills), markdown
-body format, and examples. The canonical reference for skill authors.
+The skill specification (agentskills.io open standard, ADR-008):
+skill **folder** anatomy, `SKILL.md` with YAML frontmatter (spec
+fields), progressive-disclosure budgets, the companion `skill.toml`
+manager envelope (version, relations, hints), install semantics, and
+legacy compatibility. The canonical reference for skill authors.
+
+### [skill-toml.md](./skill-toml.md)
+**Normative `skill.toml` schema (v1, open schema).** The manager
+envelope: every table/field with types and requirement levels, the
+three-TOMLs role diagram (envelope vs manifest vs lockfile),
+duplication matrix, validation rules (ENV1 identity rule, PKG/AUTH/
+REL gates), evolution policy, and open deferred questions.
 
 ### [naming.md](./naming.md)
 Naming conventions for crates (`skills-provider-*`), conda packages

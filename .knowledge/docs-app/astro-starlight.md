@@ -10,7 +10,7 @@ relates_to:
   - pixi/tasks
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Astro Starlight
@@ -18,6 +18,23 @@ updated: 2025-01-01
 The documentation site is built with Astro and the Starlight theme.
 This page covers the Astro/Starlight configuration, which features
 we use, and how the site is structured at the framework level.
+
+> **Version context (verified 2026-09-17):**
+>
+> | Component | Knowledge-base assumption | Current reality |
+> |---|---|---|
+> | Astro | v5 | **Astro 6** stable since 2026-03 (6.4 latest minor); **Astro 7** landed during 2026 — plan the upgrade, the 6→7 path is designed to be smooth |
+> | `@astrojs/starlight` | 0.x (unspecified) | **≥0.38 required for Astro 6**; latest is the 0.41/0.42 line (`npx @astrojs/upgrade` performs the combined upgrade) |
+> | Node.js | ≥20 | **Astro 6 requires Node 22+**; Node 24 is Active LTS |
+> | Runtime | bun only | Astro 6's rebuilt dev server (Vite Environment API) can run **Bun/Workerd natively** in dev — better dev/prod parity |
+>
+> Astro 6 changes worth adopting here: first-class **Content Security
+> Policy** support (good fit for our supply-chain-security story),
+> stable **live content collections** (could power a dynamic skill
+> index later), and the faster Rust-based Markdown pipeline (6.4).
+> The Astro Technology Company joined **Cloudflare** (Jan 2026) —
+> first-class Workers support; our Cloudflare Pages alternative in
+> cicd/github-actions.md is now the best-supported deploy target.
 
 ---
 

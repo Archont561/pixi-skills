@@ -8,7 +8,7 @@ relates_to:
   - roadmap/mvp-phases
 status: draft
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # skills-provider-pypi
@@ -71,11 +71,13 @@ index = "https://pypi.org/simple/"    # optional, defaults to PyPI
    Apply PEP 440 version matching
 
 3. Download wheel (.whl) — a zip file
-   Extract skills/*.md from the wheel
+   Extract the skills/<name>/ FOLDER tree from the wheel
+   (ADR-008: SKILL.md + optional scripts/, references/, ...)
 
-4. Parse SKILL.md, compute content hash
+4. Parse SKILL.md (YAML frontmatter) + companion skill.toml,
+   compute canonical tree hash
 
-5. Return Skill struct
+5. Return Skill struct (bundle)
 ```
 
 ---

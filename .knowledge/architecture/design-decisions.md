@@ -9,9 +9,10 @@ relates_to:
   - conventions/skill-format
   - conventions/naming
   - landscape/differentiation
+  - landscape/agent-skills-standard
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Design Decisions
@@ -19,6 +20,28 @@ updated: 2025-01-01
 Architecture Decision Records (ADRs) for key choices in the
 pixi-skills project. Each decision documents the context, options
 considered, choice made, and consequences.
+
+> ## 📋 Decision Review — 2026-09 (agentskills.io adoption)
+>
+> The publication of the Agent Skills open standard (2025-12-18, see
+> [`landscape/agent-skills-standard.md`](../landscape/agent-skills-standard.md))
+> triggered a full review of every standing ADR:
+>
+> | ADR | Subject | Verdict (2026-09-17) |
+> |---|---|---|
+> | ADR-001 | Lockfile format: TOML | ✅ **Re-affirmed** — lockfile is manager-owned; spec doesn't govern it |
+> | ADR-002 | Conda `skill-*` prefix | 🔄 **Amended** — package payload is now a skill *folder*, not a single `.md` |
+> | ADR-003 | Configurable agent paths | ✅ **Validated** — 70+ agents proved configurability right; default map is now data-driven |
+> | ADR-004 | Provider-native versions | 🔄 **Amended** — content hash is now a *tree* hash; semver-parsable Git tags unlock ranges on GitHub |
+> | ADR-005 | Biome | ✅ Unaffected (see tooling notes: Biome ≥2.3 covers `.astro`) |
+> | ADR-006 | xtask | ✅ Unaffected |
+> | ADR-007 | pixi extension | ✅ Unaffected |
+> | *(not an ADR)* | TOML frontmatter inside SKILL.md | ❌ **Superseded by ADR-008** — was never an ADR, lived only in conventions/skill-format.md |
+> | **ADR-008** | Adopt agentskills.io as the artifact format | 🆕 **Accepted 2026-09-17** |
+>
+> Rule going forward: **the skill artifact is owned by the standard;
+> the manager envelope is owned by us.** Any future decision that
+> changes bytes inside `SKILL.md` requires exceptional justification.
 
 ---
 
@@ -75,6 +98,14 @@ so `pixi skills find` can locate them in conda channels.
 **(a) `skill-*` naming convention** as the primary mechanism, with
 **(c) metadata labels** as a secondary signal for discovery.
 
+> **Amended 2026-09-17 (ADR-008):** the package payload convention
+> changed with the standard adoption. Originally `skills/<name>.md`
+> (single file); now `skills/<name>/` — a **folder** containing
+> `SKILL.md` plus optional `scripts/`, `references/`, `assets/`,
+> `agents/` per the agentskills.io spec, and our companion
+> `skill.toml` (manager metadata). noarch remains correct —
+> folders of markdown/scripts are platform-independent.
+
 ### Rationale
 - Convention-based discovery is fast — filter repodata package names
   by prefix. No need to fetch and parse every package's metadata.
@@ -100,17 +131,30 @@ so `pixi skills find` can locate them in conda channels.
 Different AI agents store their skills/rules in different directories.
 pixi-skills must know where to install skills for each agent.
 
-### Known Agent Paths (as of mid-2025)
+### Known Agent Paths (updated 2026-09-17)
+
+The agentskills.io standard (2025-12-18) converged most major agents
+onto native SKILL.md directories:
 
 | Agent | Skills directory |
 |---|---|
 | Claude Code | `.claude/skills/` |
-| Cursor | `.cursor/rules/` |
-| GitHub Copilot | `.github/copilot/skills/` |
-| Codex | `.codex/` |
+| OpenAI Codex | `.agents/skills/` (or `.codex/skills/`) |
+| GitHub Copilot | `.github/skills/` (was `.github/copilot/skills/` pre-standard) |
+| Cursor | `.cursor/skills/` (was `.cursor/rules/` + `.mdc` pre-standard) |
+| Gemini CLI | `.gemini/skills/` |
 | Windsurf | `.windsurf/rules/` |
 | Cline | `.cline/rules/` |
 | Aider | `.aider/` |
+| …70+ total | the vercel-labs/skills CLI maintains the fullest public map; ours must be data-driven (see below) |
+
+> **2026 note:** the count went from ~7 known agents to 70+. This
+> *validates* the configurability decision below — and pushes it
+> further: ship the default map as a data file (`default_agents.toml`)
+> that `pixi skills` can self-update (`agents --update`) without a
+> CLI release. Also: per-agent **format transforms are nearly dead** —
+> native SKILL.md support means install = copy folder. (Former table
+> kept in git history.)
 
 ### Decision
 **Configurable with sensible defaults.** Agent paths are defined in
@@ -182,6 +226,16 @@ scheme. We need a unified version resolution strategy.
   into semver would be lossy and confusing.
 - The lockfile resolves all ambiguity — once locked, the exact version
   is recorded regardless of the constraint format.
+
+> **Amended 2026-09-17 (ADR-008):** two refinements:
+> 1. **Semver-parsable Git tags unlock ranges.** The skills.sh-era
+>    ecosystem (vercel-labs/agent-skills, anthropics/skills) uses
+>    release tags. When a tag matches `[v]X.Y.Z`, the GitHub provider
+>    exposes it as a semver version, so `ref = "^1.4"` ranges work on
+>    GitHub — not just exact pins. Non-semver tags/branches remain
+>    exact-pin or floating-with-warning.
+> 2. **Content hash is a canonical tree hash** (folder → sorted-path
+>    SHA-256), not a file hash. See ADR-008 consequences.
 
 ### Consequences
 - `VersionReq` is a tagged enum, not a simple string. Each variant
@@ -284,14 +338,93 @@ compiled pixi plugin.
 
 ---
 
+## ADR-008: Adopt agentskills.io as the Skill Artifact Format
+
+**Status**: Accepted (2026-09-17) — supersedes the TOML-frontmatter
+format previously documented in `conventions/skill-format.md`.
+
+### Context
+
+Until 2026, "a skill" had no cross-vendor definition. We designed our
+own: a single `SKILL.md` file with optional **TOML** frontmatter.
+On 2025-12-18 Anthropic published **Agent Skills as an open standard**
+(agentskills.io); within months 26+ platforms (Claude, Codex, Copilot,
+Cursor, Gemini CLI, VS Code, …) adopted it, and the skills.sh
+ecosystem (83k+ skills) writes to it. The standard's format differs
+from ours on the three fundamentals: **unit** (folder, not file),
+**frontmatter** (YAML, not TOML), and **context model** (progressive
+disclosure budgets).
+
+Staying on a private format would make every ecosystem skill
+unreadable-or-lossy for us, and every skill we produce second-class
+for 26+ agents.
+
+### Options Considered
+
+| Option | Pros | Cons |
+|---|---|---|
+| **(a) Keep TOML-frontmatter SKILL.md** | No rework; parser uniformity | Non-compliant: ecosystem skills unreadable, our skills invisible to standard agents. Existential. |
+| **(b) Pure spec, drop our metadata** | Zero extension surface | Loses semver `version`, dependency edges, author table — the manager features that justify existing |
+| **(c) Spec YAML + namespaced `metadata:` in frontmatter** | Single file | Risk of collision with future spec fields; some agent linters reject unknown keys; bloats Tier-1 token budget |
+| **(d) Spec YAML frontmatter + companion `skill.toml` in the folder** | Spec-pure SKILL.md; keeps TOML parser reuse (ADR-001 spirit); managers ignore artifacts safely, agents ignore sidecars safely; mirrors `Cargo.toml`-next-to-`src/` pattern | Two files to author (mitigated: `pixi skills init` scaffolds both) |
+
+### Decision
+
+**(d) — Full agentskills.io adoption with a companion envelope:**
+
+1. **Unit of management = the skill folder** (`SKILL.md` + optional
+   `scripts/` `references/` `assets/` `agents/`).
+2. **SKILL.md frontmatter is YAML**, containing *only* spec fields
+   (`name`, `description` required; `license`, `compatibility`,
+   `allowed-tools`, `metadata` optional). Unknown fields are
+   preserved on copy, never required.
+3. **Manager metadata lives in `skill.toml`** alongside SKILL.md:
+   semver `version`, author table, dependency edges
+   (`depends_on`/`conflicts_with`), agent hints. Everything
+   install-critical stays derivable without it (a missing
+   `skill.toml` must never make a skill uninstallable).
+   *(Normative schema specified 2026-09-17 in
+   [`conventions/skill-toml.md`](../conventions/skill-toml.md) —
+   v1, open schema with a formal evolution policy.)*
+4. **Integrity = canonical tree hash** over the folder: sort by
+   relative path, SHA-256 of `path‖mode‖size‖bytes` per file.
+   Deterministic across platforms (LF normalization, exec-bit aware
+   on unix, fixed mode on Windows).
+5. **Install = copy the folder tree** into each agent's skills dir.
+   No format transforms. `skill.toml` is NOT copied (manager-only);
+   `agents/*.yaml` pass through untouched.
+6. **Legacy reading is supported, never emitted**: bare-markdown
+   SKILL.md (no frontmatter) and pre-standard single-file skills are
+   read as folder-shaped bundles of one file, hash included. New
+   skills (`pixi skills init`) are always spec folders.
+
+### Consequences
+
+- `skills-core`: `Skill.content: String` → `SkillBundle` (file map);
+  frontmatter parser swaps TOML→YAML (`serde_yaml`); companion
+  `skill.toml` parser added; tree hash replaces file hash.
+- Providers fetch folders: GitHub via Trees-API/tarball; conda
+  package layout `skills/<name>/...`; PyPI wheels `skills/<name>/...`.
+- Agent transforms are dead codepaths by default (kept only as
+  config-gated legacy overrides — see ADR-003).
+- `conventions/skill-format.md` rewritten as the adopted spec.
+- Quality budgets from the spec (≤~5k tokens body, ≤~500 lines per
+  dir) become machine-checkable lint rules (proposal P5).
+- The `.convco`/`skill-format` knowledge in older docs may reference
+  the TOML design — superseded passages are marked inline.
+
+---
+
 ## Decision Log (Summary)
 
 | ADR | Decision | Status |
 |---|---|---|
-| ADR-001 | Lockfile format: TOML | Accepted |
-| ADR-002 | Conda skill naming: `skill-*` prefix | Accepted |
-| ADR-003 | Agent paths: configurable with defaults | Accepted |
-| ADR-004 | Version resolution: provider-native + semver common language | Accepted |
-| ADR-005 | Biome over ESLint + Prettier | Accepted |
+| ADR-001 | Lockfile format: TOML | Accepted (re-affirmed 2026-09) |
+| ADR-002 | Conda skill naming: `skill-*` prefix | Accepted, **amended 2026-09** (folder payload) |
+| ADR-003 | Agent paths: configurable with defaults | Accepted, **validated 2026-09** (data-driven map) |
+| ADR-004 | Version resolution: provider-native + semver common language | Accepted, **amended 2026-09** (semver tags, tree hash) |
+| ADR-005 | Biome over ESLint + Prettier | Accepted (Biome ≥2.3) |
 | ADR-006 | xtask over shell scripts | Accepted |
 | ADR-007 | pixi extension model | Accepted |
+| — | TOML frontmatter in SKILL.md | **Superseded by ADR-008** (2026-09) |
+| ADR-008 | Adopt agentskills.io format (folder unit, YAML frontmatter, companion `skill.toml`, tree hash) | **Accepted 2026-09-17** |

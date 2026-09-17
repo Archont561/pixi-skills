@@ -8,7 +8,7 @@ relates_to:
   - architecture/workspace-layout
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Crates — Index
@@ -28,7 +28,8 @@ detection, and the skill installer.
 
 ### [skills-provider-github.md](./skills-provider-github.md)
 Implements `SkillRegistry` for GitHub repositories. Compatible with the
-existing skills.sh ecosystem — fetches SKILL.md files from GitHub repos.
+existing skills.sh ecosystem — fetches skill folders (agentskills.io
+spec) from GitHub repos.
 
 ### [skills-provider-conda.md](./skills-provider-conda.md)
 Implements `SkillRegistry` for conda channels. Uses `rattler` crates

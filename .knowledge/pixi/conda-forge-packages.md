@@ -10,7 +10,7 @@ relates_to:
   - tooling/CONTEXT
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # conda-forge Packages
@@ -23,27 +23,33 @@ the version pinning strategy.
 
 ## Package Catalog
 
+> **Version snapshot verified 2026-09-17.** Latest-usable versions at
+> review time: Rust 1.98.1, Bun 1.4.x, Node.js 24 (Active LTS),
+> Biome 2.5.x, cargo-deny 0.20.2, cargo-nextest 0.9.143, taplo 0.9.x,
+> convco 0.6.4 (crates.io only). Re-verify before each dependency
+> refresh (`pixi update`).
+
 ### Runtime Toolchains
 
 | Package | Feature | Version | Why |
 |---|---|---|---|
-| `rust` | `rust` | `>=1.80` | Rust compiler, cargo, rustfmt, clippy. The core language runtime. Must be 1.80+ for workspace lint inheritance and recent async trait improvements. |
-| `bun` | `docs` | `>=1.1` | JavaScript runtime for the Astro docs site. Replaces Node.js + npm/pnpm. |
-| `nodejs` | `docs` | `>=20` | Fallback runtime. Some Astro dependencies may need Node.js APIs not yet in bun. LTS version for stability. |
+| `rust` | `rust` | `>=1.85` | Rust compiler, cargo, rustfmt, clippy. The core language runtime. Floor raised from 1.80 → 1.85 (2026-09): Rust 2024 edition has been stable/default since 1.85; current stable is 1.98.1. |
+| `bun` | `docs` | `>=1.2` | JavaScript runtime for the Astro docs site. Replaces Node.js + npm/pnpm. 1.4.x line is current as of 2026 — much broader Node API compatibility than the 1.1 era. |
+| `nodejs` | `docs` | `>=22` | Fallback runtime. Floor raised from 20 → 22 (2026-09): Astro 6 requires Node 22+; Node 24 is the Active LTS line. |
 
 ### Rust Development Tools
 
 | Package | Feature | Version | Why |
 |---|---|---|---|
-| `cargo-nextest` | `lint` | `>=0.9` | Parallel test runner with per-test timeouts, retries, JUnit output. |
-| `cargo-deny` | `lint` | `>=0.16` | License auditing, advisory checking, crate bans, source verification. |
-| `taplo` | `lint` | `>=0.9` | TOML formatter and linter. Formats pixi.toml, Cargo.toml, etc. |
+| `cargo-nextest` | `lint` | `>=0.9` | Parallel test runner with per-test timeouts, retries, JUnit output. Still a rolling 0.9.x series (0.9.143 as of 2026-08). |
+| `cargo-deny` | `lint` | `>=0.20` | License auditing, advisory checking, crate bans, source verification. Bumped from 0.16 (2026-09); 0.19/0.20 moved the project to Rust edition 2024 (source-build MSRV 1.88 — prebuilt conda-forge binaries are unaffected). |
+| `taplo` | `lint` | `>=0.9` | TOML formatter and linter. Formats pixi.toml, Cargo.toml, etc. ⚠️ Upstream is low-activity since 2024 (still 0.9.x, TOML 1.1 support pending) — evaluate alternatives if it starts lagging on TOML 1.1 syntax. |
 
 ### JavaScript/TypeScript Tools
 
 | Package | Feature | Version | Why |
 |---|---|---|---|
-| `biome` | `docs` | `>=1.9` | TS/JS/CSS linter and formatter. Installed from conda-forge (not npm) to keep package.json deps minimal. |
+| `biome` | `docs` | `>=2.3` | TS/JS/CSS linter and formatter. Installed from conda-forge (not npm) to keep package.json deps minimal. Bumped from 1.9 (2026-09): Biome 2.x has a new config format (`biome migrate --write`) and 2.3+ lints/formats TS & CSS *inside* `.astro` files. Latest is 2.5.x. |
 
 ### System Libraries
 
@@ -63,9 +69,9 @@ We use `>=X.Y` (minimum version) rather than `=X.Y.Z` (exact pin)
 in `pixi.toml`:
 
 ```toml
-rust = ">=1.80"      # Not "=1.80.1"
-bun = ">=1.1"        # Not "=1.1.38"
-biome = ">=1.9"      # Not "=1.9.4"
+rust = ">=1.85"       # Not "=1.98.1"
+bun = ">=1.2"         # Not "=1.4.2"
+biome = ">=2.3"       # Not "=2.5.11"
 ```
 
 **Rationale**: `pixi.lock` handles exact pinning. The constraint in
@@ -160,7 +166,7 @@ If a tool is NOT on conda-forge:
 
 | Package | Status | Workaround |
 |---|---|---|
-| `convco` | Not on conda-forge | `cargo install convco` or pre-built binary |
+| `convco` | Still not on conda-forge (re-checked 2026-09); latest is 0.6.4 (2026-05) | `cargo install convco` or pre-built binary |
 
 If you submit a conda-forge recipe for any of these, update this
 document and switch the pixi.toml dependency.

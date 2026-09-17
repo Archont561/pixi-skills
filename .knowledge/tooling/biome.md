@@ -11,7 +11,7 @@ relates_to:
   - conventions/config-files
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Biome
@@ -30,7 +30,7 @@ Biome is installed by **pixi from conda-forge** — NOT from npm.
 ```toml
 # pixi.toml
 [feature.docs.dependencies]
-biome = ">=1.9"
+biome = ">=2.3"
 ```
 
 This means:
@@ -38,6 +38,15 @@ This means:
 - The `biome` binary version is pinned in `pixi.lock`
 - Every developer and CI runner uses the exact same Biome version
 - Bun's `node_modules` stays minimal — only Astro dependencies
+
+> **Biome 2 (updated 2026-09-17):** Biome 2.0 ("Biotype") shipped
+> mid-2025 with type-aware linting, multi-file analysis, and a **new
+> config format** — run `biome migrate --write` once to upgrade an
+> existing `biome.json` (see below). Biome 2.3 added full support for
+> Vue/Svelte/**Astro** files: TS/JS inside `<script>` and CSS inside
+> `<style>` of `.astro` components are now linted and formatted. That
+> is why the floor is `>=2.3`. Latest stable is the 2.5.x line (500+
+> lint rules, cross-file linting, plugin code fixes).
 
 ---
 
@@ -50,8 +59,10 @@ projects inherit from this file.
 
 ```jsonc
 {
-  "$schema": "https://biomejs.dev/schemas/1.9/schema.json",
-  "organizeImports": { "enabled": true },
+  "$schema": "https://biomejs.dev/schemas/2.5/schema.json",
+  "assist": {
+    "actions": { "source": { "organizeImports": "on" } }
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,

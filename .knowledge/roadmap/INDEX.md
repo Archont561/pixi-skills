@@ -8,7 +8,7 @@ relates_to:
   - crates/INDEX
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # Roadmap — Index
@@ -29,6 +29,13 @@ The six-phase MVP plan:
 
 Each phase includes: deliverables, definition of done, key risks,
 and dependency on prior phases.
+
+### [improvement-proposals.md](./improvement-proposals.md)
+**2026-09 strategy review** (P0–P7): spec-native folder skills,
+skills.sh-as-provider, semantic manifest/lock resolution, the
+`skills audit` trust pipeline, authoring toolchain, agent-capability
+graph, and sandboxed `skills try`. Mental models, graphs, and
+pseudocode — sequenced against the MVP phases with MoSCoW priorities.
 
 ## Related Sections
 

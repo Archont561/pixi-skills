@@ -10,7 +10,7 @@ relates_to:
   - conventions/config-files
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # cargo-deny
@@ -26,10 +26,15 @@ problematic crates, and verifies dependency sources.
 ```toml
 # pixi.toml
 [feature.lint.dependencies]
-cargo-deny = ">=0.16"
+cargo-deny = ">=0.20"
 ```
 
 Installed via pixi from conda-forge. No `cargo install` needed.
+
+> **Updated 2026-09-17:** floor raised from 0.16 → 0.20. The
+> 0.19/0.20 lines (2026) moved the project to Rust edition 2024 with
+> a source-build MSRV of Rust 1.88 — irrelevant for us because pixi
+> installs prebuilt binaries. Latest release is 0.20.2 (2026-07).
 
 ---
 

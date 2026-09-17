@@ -12,7 +12,7 @@ relates_to:
   - conventions/skill-format
 status: stable
 created: 2025-01-01
-updated: 2025-01-01
+updated: 2026-09-17
 ---
 
 # skills-core
@@ -45,11 +45,14 @@ description = "Core types and traits for AI agent skills management"
 ```
 skills-core/src/
 ├── lib.rs              # Public API re-exports
-├── skill.rs            # Skill data model
+├── skill.rs            # Skill data model + SkillMetadata (YAML frontmatter)
+├── bundle.rs           # SkillBundle (folder tree) + TreeHash   [NEW — ADR-008]
+├── companion.rs        # skill.toml envelope parsing            [NEW — ADR-008;
+                        #   normative schema: conventions/skill-toml.md]
 ├── registry.rs         # SkillRegistry trait
 ├── manifest.rs         # skills.toml + skills-lock.toml parsing
-├── installer.rs        # Install/uninstall/symlink skills into agent dirs
-├── agent.rs            # Agent detection + configuration
+├── installer.rs        # Install/uninstall skill folders into agent dirs
+├── agent.rs            # Agent detection + configuration (data-driven)
 └── config.rs           # User + project configuration
 ```
 
@@ -57,18 +60,46 @@ skills-core/src/
 
 ## Key Types (`skill.rs`)
 
+> **Updated 2026-09-17 (ADR-008):** `Skill` now carries a **folder
+> bundle**, not a single markdown string, matching the agentskills.io
+> standard. The content hash is a canonical **tree hash**.
+
 ### `Skill`
-The fully resolved skill — metadata plus content. Returned by
-`SkillRegistry::fetch()`.
+The fully resolved skill — metadata plus its folder bundle. Returned
+by `SkillRegistry::fetch()`.
 
 ```rust
 pub struct Skill {
     pub id: SkillId,
     pub version: SkillVersion,
     pub source: SkillSource,
-    pub metadata: SkillMetadata,
-    pub content: String,          // The markdown body
-    pub content_hash: ContentHash, // SHA-256 of content
+    pub metadata: SkillMetadata,   // YAML frontmatter (spec fields) + skill.toml envelope
+    pub bundle: SkillBundle,       // The folder tree
+    pub tree_hash: TreeHash,       // Canonical hash of the bundle
+}
+```
+
+### `SkillBundle`
+The folder-shaped artifact (ADR-008). `SKILL.md` at the root is
+required; everything else is optional.
+
+```rust
+pub struct SkillBundle {
+    /// Relative POSIX paths ("SKILL.md", "scripts/login.sh", ...)
+    /// BTreeMap => deterministic iteration for hashing & diffing
+    pub files: BTreeMap<RelativePath, FileEntry>,
+}
+
+pub struct FileEntry {
+    pub contents: Vec<u8>,
+    pub mode: FileMode,            // Regular | Executable (unix bit; fixed elsewhere)
+}
+
+impl SkillBundle {
+    pub fn skill_md(&self) -> Result<&FileEntry>;   // required root SKILL.md
+    pub fn parse_frontmatter(&self) -> Result<SkillMetadata>;  // YAML (serde_yaml)
+    pub fn companion(&self) -> Option<&FileEntry>;  // skill.toml, if present
+    pub fn tree_hash(&self) -> TreeHash;            // canonical, see below
 }
 ```
 
@@ -86,14 +117,14 @@ pub struct SkillId {
 
 ### `SkillSummary`
 A lightweight summary returned by `search()` and `list()`. Does not
-contain the full content — only metadata for display.
+contain the full bundle — only metadata for display.
 
 ```rust
 pub struct SkillSummary {
     pub id: SkillId,
     pub version: SkillVersion,
-    pub description: Option<String>,
-    pub agents: Vec<AgentKind>,   // Compatible agents
+    pub description: Option<String>,   // from YAML frontmatter (spec-required)
+    pub agents: Vec<AgentKind>,        // compatible agents (hints)
     pub tags: Vec<String>,
 }
 ```
@@ -135,12 +166,23 @@ pub enum VersionReq {
 }
 ```
 
-### `ContentHash`
-A SHA-256 hash of the skill's content. Used in the lockfile for
-integrity verification.
+### `TreeHash`
+Canonical SHA-256 hash of the whole skill folder (ADR-008 §4). Used
+in the lockfile for integrity verification.
 
 ```rust
-pub struct ContentHash(pub [u8; 32]);
+pub struct TreeHash(pub [u8; 32]);
+
+// Canonicalization:
+//   for (path, entry) in bundle.files /* BTreeMap: sorted */:
+//       h.update(path.as_posix()); h.update("\0");
+//       h.update(mode_octet);      h.update("\0");
+//       h.update(len_le);          h.update("\0");
+//       h.update(lf_normalized_bytes);
+// Deterministic across platforms: LF normalization; executable bit
+// recorded on unix, synthesized as Regular on Windows.
+//
+// pub struct ContentHash(pub [u8; 32]);  // RETIRED 2026-09 (file hash)
 ```
 
 ---
@@ -218,6 +260,16 @@ name = "polars"
 source = "github"
 repo = "user/polars-skill"
 ref = "tag:v2.1.0"
+# path = "skills/polars"          # optional; folder containing SKILL.md
+                                  # (defaults per repo convention, see provider docs)
+
+[[skill]]
+name = "web-design-guidelines"
+source = "github"
+repo = "vercel-labs/agent-skills"
+skill = "web-design-guidelines"    # multi-skill repo selector (@skill convention);
+                                   # resolves to skills/<skill>/ or repo <skill>/
+ref = "^1.4"                       # semver range over [v]X.Y.Z tags (ADR-004, amended)
 
 [[skill]]
 name = "internal-api"
@@ -228,13 +280,13 @@ version = ">=1.0,<2.0"
 
 ### `skills-lock.toml` — The lockfile
 
-Pins exact resolved versions with content hashes.
+Pins exact resolved versions with folder tree hashes.
 
 ```toml
 # skills-lock.toml — DO NOT EDIT MANUALLY
 # Generated by `pixi skills lock`
 
-version = 1
+version = 2          # bumped 2026-09 (ADR-008): tree_hash replaces content_hash
 
 [[skill]]
 name = "playwright"
@@ -242,17 +294,20 @@ provider = "conda"
 channel = "https://conda.anaconda.org/conda-forge"
 package = "skill-playwright"
 version = "1.2.3-h1234567_0"
-content_hash = "sha256:abcdef1234567890..."
-installed_at = "2025-01-15T10:30:00Z"
+tree_hash = "sha256:abcdef1234567890..."
+file_count = 7
+installed_at = "2026-09-15T10:30:00Z"
 
 [[skill]]
 name = "polars"
 provider = "github"
 repo = "user/polars-skill"
+path = "skills/polars"
 ref = "tag:v2.1.0"
 commit = "abc123def456"
-content_hash = "sha256:fedcba0987654321..."
-installed_at = "2025-01-15T10:30:01Z"
+tree_hash = "sha256:fedcba0987654321..."
+file_count = 3
+installed_at = "2026-09-15T10:30:01Z"
 ```
 
 ### Rust Types
@@ -273,7 +328,8 @@ pub struct LockedSkill {
     pub provider: ProviderKind,
     pub source_details: SkillSource,
     pub version: SkillVersion,
-    pub content_hash: ContentHash,
+    pub tree_hash: TreeHash,        // v2 (was: content_hash: ContentHash)
+    pub file_count: u32,            // cheap drift signal + audit display
     pub installed_at: DateTime<Utc>,
 }
 ```
@@ -293,44 +349,52 @@ pub struct SkillInstaller {
 }
 
 impl SkillInstaller {
-    /// Install a skill into all configured agent directories.
-    /// Creates the target directory if it doesn't exist.
-    /// Writes SKILL.md (or the agent-specific equivalent).
+    /// Install a skill folder into all configured agent directories.
+    /// Creates <agent-path>/<name>/ and copies the bundle tree,
+    /// EXCLUDING the manager-only skill.toml (ADR-008 §5).
     pub async fn install(&self, skill: &Skill) -> Result<InstallReceipt>;
 
-    /// Remove a skill from all agent directories.
+    /// Remove a skill folder from all agent directories.
     pub async fn uninstall(&self, skill_name: &str) -> Result<()>;
 
     /// Check if a skill is currently installed and return its status.
     pub async fn status(&self, skill_name: &str) -> Result<InstallStatus>;
 
-    /// Verify installed skill content matches the lockfile hash.
+    /// Verify the installed folder matches the lockfile tree hash.
     pub async fn verify(&self, locked: &LockedSkill) -> Result<VerifyResult>;
 }
 ```
 
 ### Installation Strategy
 
-1. **Read skill content** (from the `Skill` struct, already fetched)
+1. **Verify** `skill.tree_hash()` against the lockfile entry (fail
+   closed on mismatch)
 2. **For each configured agent**:
-   a. Determine the target path (e.g., `.claude/skills/playwright.md`)
-   b. Create parent directories if needed
-   c. Write the skill content
-   d. Optionally transform format (some agents expect different
-      frontmatter or file naming)
-3. **Return an `InstallReceipt`** with paths written, timestamps,
-   and content hash
+   a. Determine the target folder (e.g., `.claude/skills/playwright/`)
+   b. Replace the folder atomically (write to temp dir + rename)
+   c. Copy every bundle file **except `skill.toml`**; preserve
+      executable bits; pass `agents/*.yaml` through untouched
+   d. Apply legacy transforms ONLY if a config-gated agent override
+      requests them (ADR-003; default: none)
+3. **Return an `InstallReceipt`** with folders written, file count,
+   timestamps, and tree hash
 
 ### Agent-Specific Transformations
 
-Different agents may expect different file formats:
-- Claude Code: `SKILL.md` with any frontmatter
-- Cursor: `.mdc` files with specific metadata format
-- Others: plain markdown
+**Update 2026-09-17:** the agentskills.io standard made most
+transforms unnecessary — 26+ agents now read folder-shaped SKILL.md
+skills natively (Cursor no longer needs `.mdc`, Copilot/Codex have
+standard skill dirs). Install = copy the folder, unchanged.
 
-The installer applies per-agent transformations defined in
-`AgentConfig`. The `Skill` struct contains the canonical content;
-the installer adapts it per agent.
+The transformation hook stays in the design for:
+- Legacy/pre-standard agent layouts (config override per agent)
+- Optional optimization passes (e.g. stripping `scripts/` when
+  installing into a restricted sandbox agent)
+- Faithful pass-through of per-agent `agents/*.yaml` metadata files
+
+The `Skill` struct remains the canonical unit; the folder is its
+serialized form. Canonical content + per-agent adaptation = config,
+not code.
 
 ---
 
@@ -345,10 +409,11 @@ pub enum AgentKind {
     Cursor,
     GitHubCopilot,
     Codex,
+    GeminiCli,               // added 2026-09 (standard-era agents)
     Windsurf,
     Cline,
     Aider,
-    Custom(String),
+    Custom(String),          // data-driven: any entry in default_agents.toml
 }
 
 pub struct AgentConfig {
@@ -378,17 +443,23 @@ impl AgentDetector {
 }
 ```
 
-### Detection Heuristics
+### Detection Heuristics (updated 2026-09)
 
 | Agent | Project-level detection | System-level detection |
 |---|---|---|
 | Claude Code | `.claude/` directory exists | `claude` binary in PATH |
 | Cursor | `.cursor/` directory exists | `cursor` binary in PATH |
-| GitHub Copilot | `.github/copilot/` exists | — |
-| Codex | `.codex/` directory exists | `codex` binary in PATH |
+| GitHub Copilot | `.github/skills/` (or legacy `.github/copilot/`) | — |
+| Codex | `.agents/skills/` or `.codex/` exists | `codex` binary in PATH |
+| Gemini CLI | `.gemini/` directory exists | `gemini` binary in PATH |
 | Windsurf | `.windsurf/` directory exists | `windsurf` binary in PATH |
 | Cline | `.cline/` directory exists | — |
 | Aider | `.aider/` or `.aider.conf.yml` exists | `aider` binary in PATH |
+| 70+ others | driven by `default_agents.toml` (data file; `agents --update`) | per data file |
+
+The `AgentConfig.file_extension` field is retained **only** for
+legacy per-agent overrides; conforming installs copy the folder
+verbatim (ADR-008 §5).
 
 ---
 
@@ -451,8 +522,8 @@ pub enum SkillsError {
     #[error("Lockfile integrity violation: expected {expected}, got {actual}")]
     IntegrityViolation {
         skill: String,
-        expected: ContentHash,
-        actual: ContentHash,
+        expected: TreeHash,
+        actual: TreeHash,
     },
 
     #[error("Provider {provider} does not support source {source}")]
@@ -468,7 +539,13 @@ pub enum SkillsError {
     Io(#[from] std::io::Error),
 
     #[error(transparent)]
-    TomlParse(#[from] toml::de::Error),
+    TomlParse(#[from] toml::de::Error),   // skill.toml, skills.toml, lockfile
+
+    #[error("SKILL.md frontmatter error: {0}")]
+    FrontmatterYaml(String),              // serde_yaml — ADR-008
+
+    #[error("Skill bundle invalid: {0}")]
+    InvalidBundle(String),                // missing SKILL.md, bad paths
 }
 ```
 
@@ -480,9 +557,9 @@ pub enum SkillsError {
 |---|---|---|
 | Unit tests | Type parsing, version matching, hash computation | `src/*.rs` (`#[cfg(test)]`) |
 | Integration tests | Manifest round-trip (parse → serialize → parse), agent detection with fixture dirs | `tests/` |
-| Property tests | SkillVersion ordering, VersionReq matching, ContentHash determinism | Using `proptest` crate |
+| Property tests | SkillVersion ordering, VersionReq matching, TreeHash determinism (path order, LF normalization) | Using `proptest` crate |
 
-### Test Fixtures
+### Test Fixtures (folder-shaped, ADR-008)
 
 ```
 skills-core/tests/fixtures/
@@ -494,10 +571,17 @@ skills-core/tests/fixtures/
 │       ├── missing-name.toml
 │       └── bad-version.toml
 ├── lockfiles/
-│   ├── v1.toml               # Valid lockfile
-│   └── tampered.toml         # Content hash mismatch
+│   ├── v2.toml               # Valid lockfile (tree_hash)
+│   └── tampered.toml         # Tree hash mismatch
+├── bundles/
+│   ├── spec-full/            # SKILL.md + skill.toml + scripts/ + references/
+│   ├── bare-markdown/        # legacy: SKILL.md, no frontmatter
+│   └── invalid/
+│       ├── no-skill-md/      # missing required SKILL.md
+│       └── name-mismatch/    # folder name != frontmatter name
 └── agents/
-    ├── claude-project/        # .claude/skills/ directory
-    ├── cursor-project/        # .cursor/rules/ directory
-    └── multi-agent/           # Both .claude/ and .cursor/
+    ├── claude-project/       # .claude/skills/ directory
+    ├── codex-project/        # .agents/skills/ directory
+    ├── copilot-project/      # .github/skills/ directory
+    └── multi-agent/          # .claude/ + .cursor/ + .agents/
 ```
