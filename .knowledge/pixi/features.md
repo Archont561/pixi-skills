@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Pixi Features"
+description: "Planned pixi feature definitions and their dependency and task composition."
 section: pixi
 kind: detail
 tags: [pixi, features, composition, dependencies, tasks, modularity]
-relates_to:
-  - pixi/CONTEXT
-  - pixi/environments
-  - pixi/tasks
-  - pixi/conda-forge-packages
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Pixi Features
@@ -230,3 +227,10 @@ Features provide **additive** capabilities. They do not:
 If two features define a task with the same name, pixi reports a
 conflict. This shouldn't happen — each feature owns its tasks
 exclusively.
+
+## Related Concepts
+
+- [Pixi — Context](./CONTEXT.md)
+- [Pixi Environments](./environments.md)
+- [Pixi Tasks](./tasks.md)
+- [conda-forge Packages](./conda-forge-packages.md)

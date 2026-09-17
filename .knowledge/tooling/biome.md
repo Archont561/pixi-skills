@@ -1,17 +1,13 @@
 ---
+type: Reference
 title: "Biome"
+description: "Planned Biome configuration and workflows for JavaScript, TypeScript, CSS, and JSON."
 section: tooling
 kind: detail
 tags: [tooling, biome, linting, formatting, typescript, javascript, css, json]
-relates_to:
-  - tooling/CONTEXT
-  - docs-app/CONTEXT
-  - architecture/design-decisions
-  - pixi/tasks
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Biome
@@ -292,3 +288,10 @@ If a contributor is used to ESLint/Prettier:
 | `.eslintrc.json` | `biome.json` → `linter.rules` |
 | `.prettierrc` | `biome.json` → `formatter` |
 | `.eslintignore` / `.prettierignore` | `biome.json` → `files.ignore` |
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Docs App — Context](../docs-app/CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Config Files](../conventions/config-files.md)

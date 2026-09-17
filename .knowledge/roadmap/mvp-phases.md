@@ -1,16 +1,13 @@
 ---
+type: Roadmap
 title: "MVP Phases"
+description: "MVP phases, deliverables, completion criteria, risks, and dependencies."
 section: roadmap
 kind: detail
 tags: [roadmap, mvp, phases, milestones, priorities, deliverables]
-relates_to:
-  - roadmap/CONTEXT
-  - crates/INDEX
-  - landscape/differentiation
-  - architecture/dependency-graph
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # MVP Phases
@@ -360,3 +357,10 @@ simple HTTP + zip). But cumulative effort grows with each provider.
 | **Ecosystem traction** | 10+ skill packages on conda-forge. 5+ GitHub repos tagged `pixi-skill`. |
 | **Community adoption** | 100+ stars. 10+ contributors. Mentioned in AI agent tool discussions. |
 | **Enterprise readiness** | Private channels work. Offline support via pixi-pack verified. |
+
+## Related Concepts
+
+- [Roadmap — Context](./CONTEXT.md)
+- [Crates — Index](../crates/index.md)
+- [Differentiation](../landscape/differentiation.md)
+- [Dependency Graph](../architecture/dependency-graph.md)

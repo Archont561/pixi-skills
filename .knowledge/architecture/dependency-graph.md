@@ -1,17 +1,13 @@
 ---
+type: Architecture
 title: "Dependency Graph"
+description: "Planned crate dependencies, external libraries, and code-generation ordering."
 section: architecture
 kind: detail
 tags: [architecture, dependencies, crates, codegen, build, rattler]
-relates_to:
-  - crates/CONTEXT
-  - crates/skills-core
-  - crates/skills-provider-conda
-  - crates/xtask
-  - architecture/three-layer-model
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Dependency Graph
@@ -276,3 +272,11 @@ CI will produce the correct output anyway.
 Steps 1–11 have no mutual dependencies and could run in parallel
 (pixi resolves the dependency graph). Steps 12–14 are sequential:
 codegen must complete before the Astro build.
+
+## Related Concepts
+
+- [Crates — Context](../crates/CONTEXT.md)
+- [skills-core](../crates/skills-core.md)
+- [skills-provider-conda](../crates/skills-provider-conda.md)
+- [xtask](../crates/xtask.md)
+- [Three-Layer Task Model](./three-layer-model.md)

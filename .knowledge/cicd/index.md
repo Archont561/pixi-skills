@@ -1,22 +1,14 @@
----
-title: "CI/CD — Index"
-section: cicd
-kind: index
-tags: [cicd, index, navigation, github-actions, release, dist]
-relates_to:
-  - pixi/tasks
-  - pixi/environments
-  - crates/xtask
-status: stable
-created: 2025-01-01
-updated: 2025-01-01
----
-
 # CI/CD — Index
 
-This section documents the continuous integration and delivery pipeline.
-All CI steps are executed through pixi — there are no shell scripts or
-ad-hoc tool installations in CI.
+This section documents the planned continuous integration and delivery
+pipeline, with product CI steps executed through pixi. The current
+checkout instead runs the documentation-only bootstrap check described
+in [Knowledge Format](../conventions/knowledge-format.md).
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Principles for the planned reproducible CI, release, and distribution pipeline.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 

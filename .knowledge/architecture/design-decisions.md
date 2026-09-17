@@ -1,18 +1,13 @@
 ---
+type: Decision Record
 title: "Design Decisions"
+description: "Architecture decisions, alternatives, and trade-offs for pixi-skills."
 section: architecture
 kind: detail
 tags: [architecture, decisions, adr, trade-offs, rationale]
-relates_to:
-  - architecture/workspace-layout
-  - architecture/three-layer-model
-  - conventions/skill-format
-  - conventions/naming
-  - landscape/differentiation
-  - landscape/agent-skills-standard
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Design Decisions
@@ -482,3 +477,10 @@ locking, and installing are index-independent.
 | — | TOML frontmatter in SKILL.md | **Superseded by ADR-008** (2026-09) |
 | ADR-008 | Adopt agentskills.io format (folder unit, YAML frontmatter, companion `skill.toml`, tree hash) | **Accepted 2026-09-17** |
 | ADR-009 | skills.sh ecosystem as provider; index search inside `skills-provider-github`; portal stays non-goal | **Accepted 2026-09-17** |
+
+## Related Concepts
+
+- [Workspace Layout](./workspace-layout.md)
+- [Skill Format](../conventions/skill-format.md)
+- [Naming Conventions](../conventions/naming.md)
+- [Differentiation](../landscape/differentiation.md)

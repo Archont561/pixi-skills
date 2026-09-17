@@ -1,21 +1,13 @@
----
-title: "Pixi — Index"
-section: pixi
-kind: index
-tags: [pixi, index, navigation, environments, tasks, features]
-relates_to:
-  - architecture/three-layer-model
-  - tooling/INDEX
-status: stable
-created: 2025-01-01
-updated: 2025-01-01
----
-
 # Pixi — Index
 
 This section documents the `pixi.toml` configuration — the single file
 that defines all environments, dependencies, and tasks for the entire
 monorepo.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Role of pixi in the planned workspace, dependency provisioning, and task orchestration.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 
@@ -43,6 +35,6 @@ cmake). Version constraints and pinning strategy.
 
 - [Architecture/three-layer-model](../architecture/three-layer-model.md) —
   pixi is the top layer of this model
-- [Tooling](../tooling/INDEX.md) — the tools pixi provisions and
+- [Tooling](../tooling/index.md) — the tools pixi provisions and
   orchestrates
-- [CI/CD](../cicd/INDEX.md) — CI runs everything through pixi
+- [CI/CD](../cicd/index.md) — CI runs everything through pixi

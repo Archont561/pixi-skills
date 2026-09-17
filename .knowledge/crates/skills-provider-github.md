@@ -1,16 +1,13 @@
 ---
+type: Component Design
 title: "skills-provider-github"
+description: "Design of GitHub skill discovery, fetching, and skills.sh compatibility."
 section: crates
 kind: detail
 tags: [crates, provider, github, registry, skills-sh, compatibility]
-relates_to:
-  - crates/skills-core
-  - crates/pixi-skills-cli
-  - landscape/skills-sh
-  - roadmap/mvp-phases
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills-provider-github
@@ -228,3 +225,10 @@ skills-provider-github/tests/fixtures/
     ├── bare-markdown/               # legacy: plain SKILL.md, no frontmatter
     └── nested/skills/playwright/    # multi-skill repo layout (skills/<name>/)
 ```
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [pixi-skills CLI](./pixi-skills-cli.md)
+- [skills.sh](../landscape/skills-sh.md)
+- [MVP Phases](../roadmap/mvp-phases.md)

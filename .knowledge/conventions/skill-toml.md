@@ -1,16 +1,13 @@
 ---
+type: Convention
 title: "skill.toml — Manager Envelope Schema"
+description: "Manager-owned skill.toml envelope schema, validation rules, and evolution policy."
 section: conventions
 kind: detail
 tags: [conventions, skill-toml, companion, envelope, schema, versioning, ADR-008]
-relates_to:
-  - conventions/skill-format
-  - conventions/CONTEXT
-  - crates/skills-core
-  - architecture/design-decisions
 status: stable
-created: 2026-09-17
-updated: 2026-09-17
+created: "2026-09-17"
+updated: "2026-09-17"
 ---
 
 # skill.toml — Manager Envelope Schema (v1, open schema)
@@ -313,3 +310,10 @@ disable = ["body-token-budget"]   # intentionally reference-dense;
 
 Each answer lands as an additive v1 extension until/unless it forces
 a §7 rule-3 break.
+
+## Related Concepts
+
+- [Skill Format](./skill-format.md)
+- [Conventions — Context](./CONTEXT.md)
+- [skills-core](../crates/skills-core.md)
+- [Design Decisions](../architecture/design-decisions.md)

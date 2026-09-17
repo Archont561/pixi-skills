@@ -1,16 +1,13 @@
 ---
+type: Component Design
 title: "skills-provider-conda"
+description: "Design of conda-channel skill discovery and installation using rattler."
 section: crates
 kind: detail
 tags: [crates, provider, conda, rattler, channels, packages, noarch]
-relates_to:
-  - crates/skills-core
-  - crates/pixi-skills-cli
-  - landscape/pixi-ecosystem
-  - architecture/design-decisions
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # skills-provider-conda
@@ -275,3 +272,10 @@ skills-provider-conda/tests/fixtures/
 └── channels/
     └── local/                     # Local channel directory for offline tests
 ```
+
+## Related Concepts
+
+- [skills-core](./skills-core.md)
+- [pixi-skills CLI](./pixi-skills-cli.md)
+- [Pixi Ecosystem](../landscape/pixi-ecosystem.md)
+- [Design Decisions](../architecture/design-decisions.md)

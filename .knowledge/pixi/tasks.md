@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Pixi Tasks"
+description: "Planned pixi task catalog, commands, dependency chains, and feature ownership."
 section: pixi
 kind: detail
 tags: [pixi, tasks, commands, depends-on, workflows, ci]
-relates_to:
-  - pixi/CONTEXT
-  - pixi/environments
-  - pixi/features
-  - architecture/three-layer-model
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Pixi Tasks
@@ -219,3 +216,10 @@ bench = "cargo bench --workspace"
 [feature.all.tasks]
 ci = { depends-on = [..., "bench"] }
 ```
+
+## Related Concepts
+
+- [Pixi — Context](./CONTEXT.md)
+- [Pixi Environments](./environments.md)
+- [Pixi Features](./features.md)
+- [Three-Layer Task Model](../architecture/three-layer-model.md)

@@ -1,0 +1,4 @@
+# Only for knowledge-bundle validation; not pixi-skills runtime dependencies.
+PyYAML==6.0.3
+markdown-it-py==4.0.0
+mdurl==0.1.2

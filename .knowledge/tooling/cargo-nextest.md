@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "cargo-nextest"
+description: "Planned Rust test execution, nextest profiles, timeouts, retries, and CI reporting."
 section: tooling
 kind: detail
 tags: [tooling, cargo-nextest, testing, parallel, junit, ci]
-relates_to:
-  - tooling/CONTEXT
-  - pixi/tasks
-  - cicd/github-actions
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # cargo-nextest
@@ -226,3 +223,10 @@ cargo nextest run --archive-file tests.tar.zst
 
 This is useful for reproducing CI failures locally without
 recompiling.
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [GitHub Actions](../cicd/github-actions.md)
+- [Config Files](../conventions/config-files.md)

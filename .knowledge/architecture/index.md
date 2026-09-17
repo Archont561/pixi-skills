@@ -1,21 +1,13 @@
----
-title: "Architecture — Index"
-section: architecture
-kind: index
-tags: [architecture, index, navigation]
-relates_to:
-  - crates/INDEX
-  - pixi/INDEX
-status: stable
-created: 2025-01-01
-updated: 2025-01-01
----
-
 # Architecture — Index
 
 This section describes the structural design of the pixi-skills monorepo:
 how the workspace is organized, why it is organized that way, and the key
 decisions that shaped it.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Scope and principles of the planned polyglot workspace and task architecture.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 
@@ -40,8 +32,8 @@ agent target directories, version resolution strategy, and more.
 
 ## Related Sections
 
-- [Crates](../crates/INDEX.md) — the Rust crate details that implement
+- [Crates](../crates/index.md) — the Rust crate details that implement
   this architecture
-- [Pixi](../pixi/INDEX.md) — the pixi.toml that wires it all together
-- [Tooling](../tooling/INDEX.md) — the developer tools this architecture
+- [Pixi](../pixi/index.md) — the pixi.toml that wires it all together
+- [Tooling](../tooling/index.md) — the developer tools this architecture
   orchestrates

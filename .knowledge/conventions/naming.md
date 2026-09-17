@@ -1,16 +1,13 @@
 ---
+type: Convention
 title: "Naming Conventions"
+description: "Naming rules for crates, packages, skills, tasks, files, and environment variables."
 section: conventions
 kind: detail
 tags: [conventions, naming, crates, packages, tasks, files, variables]
-relates_to:
-  - conventions/CONTEXT
-  - crates/CONTEXT
-  - pixi/tasks
-  - architecture/design-decisions
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Naming Conventions
@@ -155,3 +152,10 @@ encouraged).
 Always prefixed with `v`. Always full semver (no `v0.3`, always
 `v0.3.0`). No pre-release tags (e.g., `v0.3.0-beta.1`) until we
 have a process for pre-releases.
+
+## Related Concepts
+
+- [Conventions — Context](./CONTEXT.md)
+- [Crates — Context](../crates/CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Design Decisions](../architecture/design-decisions.md)

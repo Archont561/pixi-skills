@@ -1,18 +1,22 @@
 ---
+type: Overview
 title: "pixi-skills — Project Context"
+description: "Mission, scope, and intended technology stack of the pixi-skills design."
 section: root
 kind: context
 tags: [context, mission, overview, architecture]
-relates_to:
-  - architecture/three-layer-model
-  - landscape/differentiation
-  - roadmap/mvp-phases
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # pixi-skills — Project Context
+
+> **Repository scope (2026-09-17):** this checkout contains the knowledge
+> bundle and its validation tooling, not the product implementation.
+> The workspace, crates, apps, and commands below describe the intended
+> design. See [Knowledge Format](./conventions/knowledge-format.md) for
+> the OKF profile and the limits of structural validation.
 
 ## What This Project Is
 
@@ -209,3 +213,9 @@ pixi-skills
     ├── is compatible with skills.sh GitHub repos (provider-github)
     └── publishes skills as noarch conda packages on conda channels
 ```
+
+## Related Concepts
+
+- [Three-Layer Task Model](./architecture/three-layer-model.md)
+- [Differentiation](./landscape/differentiation.md)
+- [MVP Phases](./roadmap/mvp-phases.md)

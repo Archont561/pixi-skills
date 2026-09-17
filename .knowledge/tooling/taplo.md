@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "Taplo"
+description: "Planned TOML formatting, validation, and schema integration with Taplo."
 section: tooling
 kind: detail
 tags: [tooling, taplo, toml, formatting, validation, linting]
-relates_to:
-  - tooling/CONTEXT
-  - pixi/tasks
-  - conventions/config-files
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Taplo
@@ -226,3 +224,9 @@ conflict — they just have different defaults.
 **Solution**: pixi's schema may not cover all features in newer
 versions. Pin the schema URL to a specific pixi version, or disable
 schema validation for `pixi.toml` if it causes false positives.
+
+## Related Concepts
+
+- [Tooling — Context](./CONTEXT.md)
+- [Pixi Tasks](../pixi/tasks.md)
+- [Config Files](../conventions/config-files.md)

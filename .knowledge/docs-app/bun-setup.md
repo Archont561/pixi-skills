@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Bun Setup"
+description: "Planned Bun and pixi integration for documentation development and builds."
 section: docs-app
 kind: detail
 tags: [docs, bun, pixi, setup, gotchas, compatibility, node]
-relates_to:
-  - docs-app/CONTEXT
-  - docs-app/astro-starlight
-  - pixi/environments
-  - pixi/conda-forge-packages
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Bun Setup
@@ -310,3 +307,10 @@ pixi run -e docs -- bun add astro@latest @astrojs/starlight@latest
 pixi run -e docs docs-build                 # Test the build
 # Review breaking changes in Astro/Starlight release notes
 ```
+
+## Related Concepts
+
+- [Docs App — Context](./CONTEXT.md)
+- [Astro Starlight](./astro-starlight.md)
+- [Pixi Environments](../pixi/environments.md)
+- [conda-forge Packages](../pixi/conda-forge-packages.md)

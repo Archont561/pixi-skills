@@ -1,19 +1,13 @@
 ---
+type: Overview
 title: "Tooling — Context"
+description: "Selection principles and planned integration of developer tooling across the workspace."
 section: tooling
 kind: context
 tags: [tooling, context, linting, formatting, testing, audit]
-relates_to:
-  - tooling/biome
-  - tooling/taplo
-  - tooling/cargo-deny
-  - tooling/cargo-nextest
-  - tooling/convco
-  - tooling/rustfmt-clippy
-  - pixi/tasks
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Tooling — Context
@@ -95,3 +89,13 @@ pixi-skills/
 └── apps/pixi-skills-docs/
     └── biome.json            # Biome extension for docs app
 ```
+
+## Related Concepts
+
+- [Biome](./biome.md)
+- [Taplo](./taplo.md)
+- [cargo-deny](./cargo-deny.md)
+- [cargo-nextest](./cargo-nextest.md)
+- [convco](./convco.md)
+- [rustfmt & clippy](./rustfmt-clippy.md)
+- [Pixi Tasks](../pixi/tasks.md)

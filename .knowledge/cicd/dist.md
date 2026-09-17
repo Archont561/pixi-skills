@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "Distribution Artifacts"
+description: "Planned release targets, archive layouts, and checksum generation with xtask."
 section: cicd
 kind: detail
 tags: [cicd, dist, cross-compilation, tarball, checksums, binary, release]
-relates_to:
-  - cicd/release-workflow
-  - crates/xtask
-  - crates/pixi-skills-cli
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Distribution Artifacts
@@ -265,3 +263,9 @@ pixi global install pixi-skills
 
 This installs from conda-forge (when published), which handles
 PATH setup and shell completions automatically.
+
+## Related Concepts
+
+- [Release Workflow](./release-workflow.md)
+- [xtask](../crates/xtask.md)
+- [pixi-skills CLI](../crates/pixi-skills-cli.md)

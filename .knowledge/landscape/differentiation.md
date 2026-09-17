@@ -1,17 +1,13 @@
 ---
+type: Comparative Analysis
 title: "Differentiation"
+description: "Comparison of the planned pixi-skills capabilities with skills.sh and npm-skills."
 section: landscape
 kind: detail
 tags: [landscape, differentiation, competitive, advantages, positioning]
-relates_to:
-  - landscape/CONTEXT
-  - landscape/skills-sh
-  - landscape/npm-skills
-  - landscape/pixi-ecosystem
-  - roadmap/mvp-phases
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Differentiation
@@ -200,3 +196,11 @@ It is a standalone Rust binary installable via pixi or cargo.
   world where these are table stakes
 - We track the agentskills.io standard so a pixi-managed skill works
   in all 26+ conforming agents — portability is compliance, not luck
+
+## Related Concepts
+
+- [Landscape — Context](./CONTEXT.md)
+- [skills.sh](./skills-sh.md)
+- [npm-skills](./npm-skills.md)
+- [Pixi Ecosystem](./pixi-ecosystem.md)
+- [MVP Phases](../roadmap/mvp-phases.md)

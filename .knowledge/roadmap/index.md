@@ -1,20 +1,12 @@
----
-title: "Roadmap — Index"
-section: roadmap
-kind: index
-tags: [roadmap, index, navigation, mvp, phases, milestones]
-relates_to:
-  - landscape/differentiation
-  - crates/INDEX
-status: stable
-created: 2025-01-01
-updated: 2026-09-17
----
-
 # Roadmap — Index
 
 This section documents the development roadmap for pixi-skills: what
 gets built, in what order, and why.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Roadmap principles, phase dependencies, and success criteria for the proposed product.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 
@@ -41,6 +33,6 @@ pseudocode — sequenced against the MVP phases with MoSCoW priorities.
 
 - [Landscape/differentiation](../landscape/differentiation.md) —
   competitive analysis that informed phase ordering
-- [Crates](../crates/INDEX.md) — the crates built in each phase
+- [Crates](../crates/index.md) — the crates built in each phase
 - [Architecture/design-decisions](../architecture/design-decisions.md) —
   decisions that affect roadmap sequencing

@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Astro Starlight"
+description: "Planned Astro Starlight configuration, navigation, search, and theme integration."
 section: docs-app
 kind: detail
 tags: [docs, astro, starlight, configuration, sidebar, search, dark-mode]
-relates_to:
-  - docs-app/CONTEXT
-  - docs-app/content-structure
-  - docs-app/bun-setup
-  - pixi/tasks
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Astro Starlight
@@ -304,3 +301,10 @@ dist/
 
 All pages are pre-rendered to static HTML. No server-side rendering.
 The entire `dist/` directory can be deployed to any static hosting.
+
+## Related Concepts
+
+- [Docs App — Context](./CONTEXT.md)
+- [Content Structure](./content-structure.md)
+- [Bun Setup](./bun-setup.md)
+- [Pixi Tasks](../pixi/tasks.md)

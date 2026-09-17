@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Agent Skills Open Standard"
+description: "Agent Skills open-standard overview, folder structure, adoption, and security context."
 section: landscape
 kind: detail
 tags: [landscape, agentskills, standard, SKILL.md, anthropic, spec]
-relates_to:
-  - landscape/CONTEXT
-  - landscape/skills-sh
-  - landscape/differentiation
-  - conventions/skill-format
 status: stable
-created: 2026-09-17
-updated: 2026-09-17
+created: "2026-09-17"
+updated: "2026-09-17"
 ---
 
 # Agent Skills Open Standard
@@ -175,3 +172,10 @@ signed, hash-pinned, channel-distributed skills.
 - `conventions/skill-format.md` — our format spec (to be reconciled)
 - `roadmap/improvement-proposals.md` — proposals P1–P3 build directly
   on this document
+
+## Related Concepts
+
+- [Landscape — Context](./CONTEXT.md)
+- [skills.sh](./skills-sh.md)
+- [Differentiation](./differentiation.md)
+- [Skill Format](../conventions/skill-format.md)

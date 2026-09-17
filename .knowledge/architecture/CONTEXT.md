@@ -1,16 +1,13 @@
 ---
+type: Overview
 title: "Architecture — Context"
+description: "Scope and principles of the planned polyglot workspace and task architecture."
 section: architecture
 kind: context
 tags: [architecture, context, monorepo, workspace, design]
-relates_to:
-  - architecture/workspace-layout
-  - architecture/three-layer-model
-  - architecture/dependency-graph
-  - architecture/design-decisions
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Architecture — Context
@@ -83,3 +80,10 @@ These pages are referenced by:
   where it fits, then `design-decisions.md` for naming conventions.
 - **Questioning a design choice?** Check `design-decisions.md` for the
   ADR — it may already be documented with trade-offs.
+
+## Related Concepts
+
+- [Workspace Layout](./workspace-layout.md)
+- [Three-Layer Task Model](./three-layer-model.md)
+- [Dependency Graph](./dependency-graph.md)
+- [Design Decisions](./design-decisions.md)

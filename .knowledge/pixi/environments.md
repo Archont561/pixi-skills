@@ -1,16 +1,13 @@
 ---
+type: Reference
 title: "Pixi Environments"
+description: "Planned pixi environments, feature composition, and development use cases."
 section: pixi
 kind: detail
 tags: [pixi, environments, features, default, docs, release, all]
-relates_to:
-  - pixi/CONTEXT
-  - pixi/features
-  - pixi/tasks
-  - architecture/three-layer-model
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Pixi Environments
@@ -204,3 +201,10 @@ all = { features = ["rust", "lint", "docs", "release", "bench", "all"] }
 
 The principle: environments are cheap. Add one whenever a workflow
 needs a distinct set of tools.
+
+## Related Concepts
+
+- [Pixi — Context](./CONTEXT.md)
+- [Pixi Features](./features.md)
+- [Pixi Tasks](./tasks.md)
+- [Three-Layer Task Model](../architecture/three-layer-model.md)

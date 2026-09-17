@@ -1,15 +1,13 @@
 ---
+type: Convention
 title: "Commit Conventions"
+description: "Conventional commit types, scopes, breaking changes, and release implications."
 section: conventions
 kind: detail
 tags: [conventions, commits, conventional-commits, scopes, types, changelog]
-relates_to:
-  - conventions/CONTEXT
-  - tooling/convco
-  - cicd/release-workflow
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Commit Conventions
@@ -192,3 +190,9 @@ Configure branch protection to require conventional PR titles:
 | `feat: add X and fix Y` | Split into two commits: `feat: add X` and `fix: fix Y` |
 | `feat(Core): ...` (uppercase scope) | Use lowercase: `feat(core): ...` |
 | Missing colon after type | `feat(core) description` → `feat(core): description` |
+
+## Related Concepts
+
+- [Conventions — Context](./CONTEXT.md)
+- [convco](../tooling/convco.md)
+- [Release Workflow](../cicd/release-workflow.md)

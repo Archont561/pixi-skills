@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "Content Structure"
+description: "Planned documentation sections, page responsibilities, and reading order."
 section: docs-app
 kind: detail
 tags: [docs, content, information-architecture, sections, pages, sidebar]
-relates_to:
-  - docs-app/astro-starlight
-  - docs-app/custom-components
-  - crates/xtask
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Content Structure
@@ -295,3 +293,9 @@ Link to other pages using relative paths:
 See the [lockfile concept](/concepts/lockfile/) for details.
 See the [`add` command](/cli/add/) reference.
 ```
+
+## Related Concepts
+
+- [Astro Starlight](./astro-starlight.md)
+- [Custom Components](./custom-components.md)
+- [xtask](../crates/xtask.md)

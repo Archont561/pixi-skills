@@ -1,17 +1,13 @@
 ---
+type: Playbook
 title: "Release Workflow"
+description: "Planned release steps from conventional commits through versioning and publication."
 section: cicd
 kind: detail
 tags: [cicd, release, versioning, changelog, convco, xtask, publish]
-relates_to:
-  - cicd/CONTEXT
-  - cicd/dist
-  - crates/xtask
-  - tooling/convco
-  - conventions/commit-conventions
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Release Workflow
@@ -357,3 +353,11 @@ cargo yank --version 0.3.0 pixi-skills
 □ Verify crates.io has new versions
 □ Announce release (if applicable)
 ```
+
+## Related Concepts
+
+- [CI/CD — Context](./CONTEXT.md)
+- [Distribution Artifacts](./dist.md)
+- [xtask](../crates/xtask.md)
+- [convco](../tooling/convco.md)
+- [Commit Conventions](../conventions/commit-conventions.md)

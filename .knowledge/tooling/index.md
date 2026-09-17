@@ -1,16 +1,3 @@
----
-title: "Tooling — Index"
-section: tooling
-kind: index
-tags: [tooling, index, navigation, biome, taplo, cargo-deny, nextest, convco]
-relates_to:
-  - pixi/tasks
-  - pixi/conda-forge-packages
-status: stable
-created: 2025-01-01
-updated: 2025-01-01
----
-
 # Tooling — Index
 
 This section documents every developer tool in the pixi-skills stack.
@@ -19,6 +6,11 @@ key settings, how pixi installs and invokes it, and common workflows.
 
 All tools are provisioned by pixi from conda-forge. No global installs
 needed.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Selection principles and planned integration of developer tooling across the workspace.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 

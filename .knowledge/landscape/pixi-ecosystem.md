@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "Pixi Ecosystem"
+description: "Roles of pixi, rattler, conda, prefix.dev, and related tools in the project design."
 section: landscape
 kind: detail
 tags: [landscape, pixi, rattler, conda, prefix-dev, pixi-pack, rattler-build]
-relates_to:
-  - landscape/CONTEXT
-  - crates/skills-provider-conda
-  - architecture/dependency-graph
 status: stable
-created: 2025-01-01
-updated: 2026-09-17
+created: "2025-01-01"
+updated: "2026-09-17"
 ---
 
 # Pixi Ecosystem
@@ -174,3 +172,9 @@ a conda channel hosting service (prefix.dev) with:
   (`pixi-skills`) is a stable interface.
 - conda package format is extremely stable (hasn't changed in years).
   Skills published as conda packages will remain installable long-term.
+
+## Related Concepts
+
+- [Landscape — Context](./CONTEXT.md)
+- [skills-provider-conda](../crates/skills-provider-conda.md)
+- [Dependency Graph](../architecture/dependency-graph.md)

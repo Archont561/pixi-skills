@@ -1,21 +1,13 @@
----
-title: "Docs App — Index"
-section: docs-app
-kind: index
-tags: [docs, astro, starlight, bun, index, navigation]
-relates_to:
-  - pixi/tasks
-  - tooling/biome
-status: stable
-created: 2025-01-01
-updated: 2025-01-01
----
-
 # Docs App — Index
 
 This section documents the `apps/pixi-skills-docs/` Astro Starlight
 documentation site. It is a static site built with bun, deployed to
 GitHub Pages or Cloudflare Pages.
+
+## Start Here
+
+- [Context](./CONTEXT.md) — Scope and principles of the planned Astro Starlight documentation application.
+- [Bundle index](../index.md) — Browse all knowledge sections.
 
 ## Pages
 

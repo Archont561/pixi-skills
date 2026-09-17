@@ -1,15 +1,13 @@
 ---
+type: Reference
 title: "Config Files"
+description: "Target configuration-file locations and the tools each file configures."
 section: conventions
 kind: detail
 tags: [conventions, config, files, locations, tools, map]
-relates_to:
-  - conventions/CONTEXT
-  - architecture/workspace-layout
-  - tooling/CONTEXT
 status: stable
-created: 2025-01-01
-updated: 2025-01-01
+created: "2025-01-01"
+updated: "2025-01-01"
 ---
 
 # Config Files
@@ -139,3 +137,9 @@ Config files that are NOT in `.gitignore` (committed to git):
 - `CHANGELOG.md` (generated but committed)
 - `completions/*` (generated but committed)
 - Generated CLI docs and schema (committed for non-Rust contributors)
+
+## Related Concepts
+
+- [Conventions — Context](./CONTEXT.md)
+- [Workspace Layout](../architecture/workspace-layout.md)
+- [Tooling — Context](../tooling/CONTEXT.md)
