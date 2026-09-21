@@ -1,0 +1,49 @@
+# lefthook — local git hooks. Every hook calls a pixi task so hooks and CI cannot drift.
+# https://lefthook.dev
+#
+# Only *staged* files are considered: the `glob` filters, and `stage_fixed: true`
+# re-stages whatever a formatter rewrote.
+
+min_version: "2.0.0"
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: rust-fmt
+      glob: "*.rs"
+      run: pixi run -e dev fmt
+      stage_fixed: true
+
+    - name: rust-clippy
+      glob: "{**/*.rs,Cargo.toml,crates/**/Cargo.toml}"
+      run: pixi run -e dev lint-rust
+
+    - name: toml-fmt
+      glob: "*.toml"
+      run: pixi run -e dev -- taplo fmt {staged_files}
+      stage_fixed: true
+
+    - name: docs-biome
+      glob: "apps/pixi-skills-docs/**/*.{js,ts,mjs,cjs,json,jsonc,astro}"
+      run: pixi run -e dev -- biome check --write {staged_files}
+      stage_fixed: true
+
+    - name: workflows
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: pixi run -e dev lint-actions
+
+    - name: skills-core
+      # the skill format is the core model: manifest changes drive skills.toml / skills-lock.toml
+      glob: "crates/skills-core/**/*.rs"
+      run: pixi run -e dev cargo test -p skills-core
+
+commit-msg:
+  jobs:
+    - name: convco
+      # `{1}` is the file holding the proposed message (git commit-msg hook argument)
+      run: pixi run -e dev lint-commit < {1}
+
+pre-push:
+  jobs:
+    - name: tests
+      run: pixi run -e dev test

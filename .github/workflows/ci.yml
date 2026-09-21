@@ -1,29 +1,22 @@
 name: ci
 
-# Layout copied from Archont561/pixi-sandbox@7a2dcb1 (.github/workflows/ci.yml)
-# and adapted to this repository in three ways:
+# Every step in this file is ONE line: `pixi run -e <env> <task>`.
 #
-#   1. One workflow instead of two. The OKF bundle validation that used to live
-#      in knowledge.yml is the `knowledge` job below, so `ci` is the single
-#      entry point the way it is upstream.
-#   2. A `probe` job gates every pixi/Cargo step on the workspace actually
-#      existing. This file can therefore be merged before Phase 0 lands without
-#      turning CI permanently red; the gates switch themselves on the moment
-#      pixi.toml and pixi.lock are committed.
-#   3. Task names come from .knowledge/pixi/tasks.md, not from pixi-sandbox's.
+# Layout copied from Archont561/pixi-sandbox (.github/workflows/ci.yml) and adapted:
+#   - the `probe` + `knowledge` jobs are gone: this workflow merges with the
+#     workspace already present (pixi.toml + pixi.lock + Cargo.toml), and the OKF
+#     Python validator was removed from this repository
+#   - `lint-sandbox-plan` is omitted: its task is inert here (no local `pixi-sandbox`
+#     command) and sandbox publishing runs through the upstream release binary
+#   - `docs-build` runs only once apps/pixi-skills-docs/package.json exists
 #
-# The upstream rule is kept verbatim (pixi-sandbox design.md §6): every
-# workspace step is ONE line, `pixi run -e <env> <task>`. A step that needs
-# more than one line belongs in pixi.toml as a task — never inline bash here.
-# That keeps this file reviewable and means the command CI runs is the command
-# a contributor runs locally. The steps below are exactly the leaf tasks that
-# `pixi run -e all ci` composes (see .knowledge/pixi/tasks.md §"ci"), so the
-# documented single-command entry point and this file cannot drift apart;
-# they are expanded here only so a failure names its own gate in the UI.
+# The upstream rule is kept verbatim: every workspace step is ONE line,
+# `pixi run -e <env> <task>`. A step that needs more than one line belongs in
+# pixi.toml as a task — never inline bash here. That keeps this file reviewable
+# and means the command CI runs is the command a contributor runs locally.
 #
 # Action pins are full commit SHAs with a trailing `# vX.Y.Z` comment, taken
-# from pixi-sandbox@7a2dcb1 and from the previous knowledge.yml. Dependabot
-# maintains them (.github/dependabot.yml).
+# from pixi-sandbox. Dependabot maintains them (.github/dependabot.yml).
 
 on:
   push:
@@ -43,89 +36,35 @@ permissions:
   contents: read
 
 jobs:
-  probe:
-    name: probe workspace
+  ci:
+    name: ci (lint · test · coverage)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      has-workspace: ${{ steps.probe.outputs.has_workspace }}
-      has-docs: ${{ steps.probe.outputs.has_docs }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - id: probe
-        shell: bash
-        run: |
-          set -euo pipefail
-          workspace=false
-          docs=false
-          if [ -f pixi.toml ] && [ -f pixi.lock ]; then
-            workspace=true
-          fi
-          if [ -f apps/pixi-skills-docs/package.json ]; then
-            docs=true
-          fi
-          echo "has_workspace=$workspace" >> "$GITHUB_OUTPUT"
-          echo "has_docs=$docs" >> "$GITHUB_OUTPUT"
-          if [ "$workspace" = false ]; then
-            echo "::notice::No pixi workspace yet (pixi.toml + pixi.lock). The Rust and docs gates below stay skipped until Phase 0 lands; knowledge validation is unaffected."
-          fi
-
-  knowledge:
-    name: knowledge (OKF structure · repository lint)
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: '3.11'
-          cache: pip
-          cache-dependency-path: requirements-knowledge.txt
-      - name: Install validation dependencies
-        run: python -m pip install -r requirements-knowledge.txt
-      - name: Test the validator
-        run: python -m unittest discover -s tests -v
-      - name: Check OKF structure and authoring policy
-        run: python scripts/check_knowledge.py --lint
-
-  workspace:
-    name: workspace (fmt · lint · test · docs)
-    needs: probe
-    if: ${{ needs.probe.outputs.has-workspace == 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Full history: convco check counts commits since the last tag, and
-          # Starlight's lastUpdated reads per-file commit dates.
-          fetch-depth: 0
-
       - uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e # v0.10.2
         with:
-          environments: all
+          environments: dev
           cache: true
-
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-
-      - run: pixi run -e all fmt-check-all
-      - run: pixi run -e all lint-all
-      - run: pixi run -e default test
-      - run: pixi run -e default test-doc
-      - run: pixi run -e release check-commits
-
-      - if: ${{ needs.probe.outputs.has-docs == 'true' }}
-        run: pixi run -e all docs-build
-
-      - if: ${{ needs.probe.outputs.has-docs == 'true' }}
+      - run: pixi run -e dev fmt-check
+      - run: pixi run -e dev lint-rust
+      - run: pixi run -e dev deny
+      - run: pixi run -e dev lint-actions
+      - run: pixi run -e dev lint-toml
+      - run: pixi run -e dev lint-docs
+      - run: pixi run -e dev test
+      - run: pixi run -e dev test-doc
+      - run: pixi run -e dev coverage
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: lcov.info
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - if: hashFiles('apps/pixi-skills-docs/package.json') != ''
+        run: pixi run -e dev docs-build
+      - if: hashFiles('apps/pixi-skills-docs/package.json') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: docs-site
           path: apps/pixi-skills-docs/dist
           retention-days: 7
-          if-no-files-found: error

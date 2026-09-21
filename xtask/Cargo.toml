@@ -1,0 +1,25 @@
+[package]
+name = "xtask"
+description = "Build automation — never published"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+xshell = { workspace = true }
+toml_edit = { workspace = true }
+schemars = { workspace = true }
+sha2 = { workspace = true }
+flate2 = { workspace = true }
+tar = { workspace = true }
+glob = { workspace = true }
