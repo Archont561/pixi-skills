@@ -400,7 +400,7 @@ pub fn build_command() -> clap::Command {
     Cli::command()
 }
 
-// In xtask/src/cli_docs.rs:
+// In crates/xtask/src/cli_docs.rs:
 fn generate() {
     let cmd = pixi_skills::cli::build_command();
     for sub in cmd.get_subcommands() {

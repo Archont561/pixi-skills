@@ -49,7 +49,7 @@ what tool it configures, where it lives, and its documentation link.
 | File | Tool | Purpose |
 |---|---|---|
 | `crates/*/Cargo.toml` | cargo | Crate-specific deps, features, metadata |
-| `xtask/Cargo.toml` | cargo | xtask deps, `publish = false` |
+| `crates/xtask/Cargo.toml` | cargo | xtask deps, `publish = false` |
 
 ## Generated Artifacts (Not Config, but Tracked)
 

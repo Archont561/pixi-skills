@@ -7,7 +7,7 @@ members = [
   "crates/skills-provider-prefix",
   "crates/skills-provider-pypi",
   "crates/pixi-skills",
-  "xtask",
+  "crates/xtask",
 ]
 
 [workspace.package]

@@ -88,7 +88,7 @@ deny = "cargo deny check"
 lint-actions = "actionlint"
 # Inert until a local `pixi-sandbox` command exists; kept for upstream parity.
 lint-sandbox-plan = "pixi-sandbox plan --config .pixi-sandbox.toml --json"
-lint-toml = "taplo fmt --check pixi.toml .pixi-sandbox.toml Cargo.toml rustfmt.toml .config/nextest.toml crates/skills-core/Cargo.toml crates/skills-provider-github/Cargo.toml crates/skills-provider-conda/Cargo.toml crates/skills-provider-prefix/Cargo.toml crates/skills-provider-pypi/Cargo.toml crates/pixi-skills/Cargo.toml crates/pixi-skills/pixi.toml xtask/Cargo.toml deny.toml"
+lint-toml = "taplo fmt --check pixi.toml .pixi-sandbox.toml Cargo.toml rustfmt.toml .config/nextest.toml crates/skills-core/Cargo.toml crates/skills-provider-github/Cargo.toml crates/skills-provider-conda/Cargo.toml crates/skills-provider-prefix/Cargo.toml crates/skills-provider-pypi/Cargo.toml crates/pixi-skills/Cargo.toml crates/pixi-skills/pixi.toml crates/xtask/Cargo.toml deny.toml"
 # Needs apps/pixi-skills-docs (Phase 4). CI guards this with
 # `hashFiles('apps/pixi-skills-docs/package.json')`, so it is skipped — not failed —
 # until the docs app exists.

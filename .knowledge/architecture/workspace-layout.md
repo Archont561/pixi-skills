@@ -7,7 +7,7 @@ kind: detail
 tags: [architecture, workspace, layout, monorepo, directories, files]
 status: stable
 created: "2025-01-01"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # Workspace Layout
@@ -87,24 +87,22 @@ pixi-skills/
 │   │   └── src/
 │   │       └── lib.rs
 │   │
-│   └── pixi-skills/              # CLI binary (pixi extension)
-│       ├── Cargo.toml            # feature-flags for providers
+│   ├── pixi-skills/              # CLI binary (pixi extension)
+│   │   ├── Cargo.toml            # feature-flags for providers
+│   │   └── src/
+│   │       ├── main.rs           # Entry point
+│   │       └── cli.rs            # clap v4 subcommand definitions
+│   │
+│   └── xtask/                    # cargo xtask — never published
+│       ├── Cargo.toml            # publish = false
 │       └── src/
-│           ├── main.rs           # Entry point
-│           └── cli.rs            # clap v4 subcommand definitions
-│
-│── ── Build Automation ───────────────────────────────────────────
-│
-├── xtask/                        # cargo xtask — never published
-│   ├── Cargo.toml                # publish = false
-│   └── src/
-│       ├── main.rs               # Subcommand dispatcher
-│       ├── cli_docs.rs           # clap Command → MDX files
-│       ├── skill_schema.rs       # Rust types → JSON Schema
-│       ├── release.rs            # Version bumps + changelog + tag
-│       ├── lint.rs               # Workspace consistency checks
-│       ├── dist.rs               # Cross-compile + tarball + checksums
-│       └── completions.rs        # Shell completion generation
+│           ├── main.rs           # Subcommand dispatcher
+│           ├── cli_docs.rs       # clap Command → MDX files
+│           ├── skill_schema.rs   # Rust types → JSON Schema
+│           ├── release.rs        # Version bumps + changelog + tag
+│           ├── lint.rs           # Workspace consistency checks
+│           ├── dist.rs           # Cross-compile + tarball + checksums
+│           └── completions.rs    # Shell completion generation
 │
 │── ── Documentation App ──────────────────────────────────────────
 │
@@ -170,8 +168,9 @@ pixi-skills/
 
 ### `crates/` — The Rust workspace
 
-All Rust code lives here. The directory contains library crates and
-binary crates but no build automation (that lives in `xtask/`).
+All Rust code lives here: library crates, binary crates, and the
+`xtask/` build-automation crate (`publish = false`, never depended
+upon by the others).
 
 **Convention**: every crate in `crates/` is a workspace member declared
 in the root `Cargo.toml`:
@@ -180,9 +179,11 @@ in the root `Cargo.toml`:
 members = ["crates/*"]
 ```
 
-The `xtask/` directory is NOT inside `crates/` because it is not a
-publishable workspace member — it is tooling. Keeping it at the top
-level makes this distinction visible in the directory tree.
+`xtask/` lives inside `crates/` like every other member — the
+`publish = false` flag (not the directory) marks it as tooling.
+One location for all Rust code keeps the workspace glob, the
+`lint-toml` file list, and every path-based tool uniform.
+(Previously documented at the workspace root; moved 2026-09-21.)
 
 ### `apps/` — Non-Rust applications
 
@@ -195,9 +196,9 @@ skill registry browser), they go here.
 `package.json` + `bun.lock`. Pixi provisions the runtime (bun) but does
 not manage JS packages — that's bun's job.
 
-### `xtask/` — Build automation
+### `crates/xtask/` — Build automation
 
-A standalone Rust crate at the workspace root (not inside `crates/`).
+A workspace member at `crates/xtask/`, alongside the other crates.
 It has `publish = false` and exists solely for developer tooling. It
 depends on workspace crates (e.g., `pixi-skills` for clap introspection)
 but is never depended upon by them.
