@@ -51,7 +51,7 @@ xshell = "0.2"
 toml_edit = "0.22"
 schemars = "0.8"
 # CLI UX
-console = "0.15"
+console = "0.16"
 indicatif = "0.17"
 tabled = "0.18"
 dialoguer = "0.11"
