@@ -35,6 +35,14 @@ The pixi/rattler/conda ecosystem that pixi-skills builds on: pixi
 pixi-pack (offline bundles), rattler-build (package building). How
 pixi-skills fits into this ecosystem.
 
+### [pixi-sandbox.md](./pixi-sandbox.md)
+The sibling project `Archont561/pixi-sandbox`: git-native offline pixi
+environment packs, its measured numbers, and what pixi-skills can
+reuse. Verified against v0.2.0 (2026-09-21). Includes the conda-forge
+`bun`/win-64 finding that corrects our platform plan, the hardened
+restore invariants worth adopting, and four ranked integration levels
+gated on the workspace existing.
+
 ### [differentiation.md](./differentiation.md)
 Our competitive advantages: lockfile-first reproducibility, provider
 extensibility via traits, conda-native packaging, enterprise readiness

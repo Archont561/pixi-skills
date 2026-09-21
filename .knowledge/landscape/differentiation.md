@@ -7,7 +7,7 @@ kind: detail
 tags: [landscape, differentiation, competitive, advantages, positioning]
 status: stable
 created: "2025-01-01"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # Differentiation
@@ -40,7 +40,7 @@ exists and why users should choose it over alternatives.
 | **Multi-provider** | ✅ GitHub + conda + prefix.dev + PyPI | ❌ git only | ❌ npm / git only | ❌ Manual |
 | **Multi-language** | ✅ Any language (conda ecosystem) | ❌ JS runtime required | ❌ npm/JS only | ✅ Language-agnostic (manual) |
 | **Private sources** | ✅ Private conda channels, prefix.dev orgs, SSO authz | ❌ Public git only (private repos need per-user git creds) | ⚠️ Private npm registries | ❌ Manual |
-| **Offline/airgap** | ✅ pixi-pack bundles, local channels | ❌ None | ❌ None | ✅ Already local |
+| **Offline/airgap** | ✅ pixi-pack bundles, local channels — [transport measured in a sibling project](./pixi-sandbox.md) | ❌ None | ❌ None | ✅ Already local |
 | **Org policy** (allow/deny lists, audit trail) | ✅ Lockfile is the audit artifact; policy file planned | ❌ None | ⚠️ Enterprise npm proxies only | ❌ None |
 | **Agent support** | ✅ Configurable, extensible | ✅ 70+ agents (best-in-class) | ⚠️ Limited | ✅ Manual per agent |
 | **Ecosystem size** | ⚠️ New (growing via GitHub compat) | ✅ Largest — 83k+ skills, 8M+ installs | ⚠️ Small | ∞ (anything is a skill) |
@@ -120,7 +120,13 @@ pixi-skills is designed for professional environments from day one:
 
 - **Private channels**: host skills on prefix.dev orgs or internal
   Artifactory instances
-- **Offline support**: pixi-pack creates offline skill bundles
+- **Offline support**: pixi-pack creates offline skill bundles. The
+  transport layer is no longer hypothetical: the sibling project
+  [pixi-sandbox](./pixi-sandbox.md) packs pixi environments plus
+  vendored crates into a sha256-verified Git orphan branch and proves
+  restore with zero network — at a measured ~110 MB after Git dedup for
+  a small two-environment project. Quote that number when promising
+  airgapped delivery; the tool payload alone is ~96 MB of it.
 - **Audit trail**: lockfile records exact versions, hashes, and
   install timestamps
 - **Supply chain security**: content hashes prevent tampering, conda
@@ -203,4 +209,5 @@ It is a standalone Rust binary installable via pixi or cargo.
 - [skills.sh](./skills-sh.md)
 - [npm-skills](./npm-skills.md)
 - [Pixi Ecosystem](./pixi-ecosystem.md)
+- [pixi-sandbox](./pixi-sandbox.md) — measured offline transport for the airgap claim
 - [MVP Phases](../roadmap/mvp-phases.md)

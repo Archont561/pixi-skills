@@ -7,7 +7,7 @@ kind: detail
 tags: [crates, provider, conda, rattler, channels, packages, noarch]
 status: stable
 created: "2025-01-01"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # skills-provider-conda
@@ -245,6 +245,17 @@ pixi unpack skills-bundle.tar.zst
 This is possible because conda packages are self-contained archives.
 The conda provider works with both online channels and local
 directory channels (from pixi-pack output).
+
+> **Measured precedent (2026-09-21).** The sibling project
+> [pixi-sandbox](../landscape/pixi-sandbox.md) implements this exact
+> transport in Rust: `pixi-pack` output plus a sha256 manifest published
+> to a Git orphan branch, restored with zero network and proven inside
+> `unshare -rn`. Two details worth copying for the offline test fixtures
+> above — it publishes `.conda` files as whole, content-addressed blobs
+> (files above 95 MiB are split into `.partNNN` and rejoined after
+> verification), and it rejects dynamically linked tools outright. Its
+> measured payload for a small two-environment project was 262 MB of
+> transport, ~110 MB after Git dedup.
 
 ---
 
