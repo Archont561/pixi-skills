@@ -8,15 +8,14 @@ all-features = true
 [advisories]
 version = 2
 yanked = "warn"
-# Only IDs that are individually justified, never a blanket downgrade: `ignore` is
-# per-advisory, so a future vulnerability in either crate still fails the build.
-# Both are *unmaintained*, not vulnerable, and both say "No safe upgrade is available".
-# They are transitive dependencies of the CLI's planned table and progress output —
-# `pixi-skills` does not call either one yet — so revisit when Phase 2 lands and the
-# dependency set is actually exercised.
-#   RUSTSEC-2025-0119  number_prefix 0.4.0   ← indicatif ← pixi-skills
-#   RUSTSEC-2026-0173  proc-macro-error2 2.0.1 ← tabled_derive ← tabled ← pixi-skills
-ignore = ["RUSTSEC-2025-0119", "RUSTSEC-2026-0173"]
+# No ignores. There were two, and both earned their removal on 2026-09-21 when the
+# dependabot bumps landed (indicatif 0.18, tabled 0.22):
+#   RUSTSEC-2025-0119  number_prefix 0.4.0     ← indicatif      (now: unit-prefix)
+#   RUSTSEC-2026-0173  proc-macro-error2 2.0.1 ← tabled_derive  (tabled 0.22 dropped it)
+# Both were *unmaintained* advisories with "no safe upgrade"; the upgrades made the
+# crates disappear from the graph, so the ignores no longer fire. If either crate is
+# re-introduced (Phase 2 exercises the dependency set), add the ID back to `ignore`
+# with a per-advisory justification — never a blanket downgrade.
 
 [licenses]
 version = 2
