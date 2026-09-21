@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # One-liner offline reconstruction from orphan branch, with PATH aliases.
 # Usage: bash scripts/restore.sh [branch] [output-path]
-#   branch defaults to sandbox/linux-64
+#   branch defaults to sandbox/developer-linux-64 — the branch .pixi-sandbox.toml
+#     publishes (branch_prefix "sandbox" + bundle "developer" + platform "linux-64").
+#     Confirm with: pixi-sandbox plan --config .pixi-sandbox.toml
 #   output-path defaults to .
 # After restore, sources .pixi/sandbox-env.sh and adds dev env to PATH.
 # Copied verbatim from Archont561/pixi-sandbox (scripts/restore.sh).
 
 set -euo pipefail
 
-BRANCH="${1:-sandbox/linux-64}"
+BRANCH="${1:-sandbox/developer-linux-64}"
 OUTPUT="${2:-.}"
 TMPDIR="${TMPDIR:-/tmp}"
 WORKTREE="$TMPDIR/sb-$$"

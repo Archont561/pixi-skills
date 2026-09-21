@@ -1,34 +1,33 @@
 name: publish-sandbox
 
-# Thin caller around the reusable publisher in Archont561/pixi-sandbox.
+# Publishes one pixi-sandbox orphan branch per (bundle × platform) target declared
+# in .pixi-sandbox.toml, once `ci` is green on main.
 #
-# Layout copied from pixi-sandbox@7a2dcb1 (.github/workflows/publish-sandbox.yml)
-# and reduced to the caller side. That file is 414 lines because it also
-# *implements* the publisher; this one only invokes it. We consume it in
-# **release-binary mode** (`release-repository` + an immutable `release-ref`),
-# because the upstream *local* mode runs `cargo build -p pixi-sandbox` inside
-# the checked-out project and then calls
-# `./project/.github/actions/publish-pixi-sandbox` — neither of which will ever
-# exist in this repository. Release mode instead downloads a sha256-verified
-# release asset and checks the composite actions out of the pinned upstream
-# commit, so nothing is vendored here and nothing is forked.
+# ── Why this is not a `uses:` caller of the upstream reusable workflow ────────
 #
-# The reviewed `.pixi-sandbox.toml` is the single source of truth for what gets
-# published: the upstream `plan` job runs `pixi-sandbox plan --json` against it,
-# rejects unknown platforms and unused runner overrides, and expands it into one
-# native job per bundle × platform. That validation is why this repository needs
-# no `lint-sandbox-plan` gate of its own.
+# It used to be one. Upstream's reusable publisher checks the project out into a
+# `project/` subdirectory and then runs `prefix-dev/setup-pixi` *without*
+# `working-directory: project`. There is no pixi.toml at the workspace root, so
+# `pixi install` fails and the `plan` job dies before a matrix ever exists.
+# Measured on the upstream repository itself (2026-09-21): its last two
+# publish-sandbox runs failed in ~10s at "Install Pixi (local mode)", and
+# `Archont561/pixi-sandbox` has no `sandbox/*` branches at all. The defect is in
+# the job graph the reusable workflow exposes to callers, not in the transport.
+#
+# So this workflow consumes the *same* verified composite actions, checked out of
+# the *same* immutable upstream commit, but owns the job graph: the project is
+# checked out at the workspace root, where `pixi install` can see pixi.toml.
+# Nothing is vendored and nothing is forked — `setup-pixi-sandbox` still downloads
+# the sha256-verified v0.2.0 release binary and `publish-pixi-sandbox` still runs
+# install → pack → doctor --verify → publish.
 #
 # Triggers:
 # - workflow_run: after `ci` succeeds on main
 # - workflow_dispatch: manual, with optional environment/platform overrides
 #
-# Dormant until Phase 0: the `probe` gate below keeps this workflow from
-# attempting to pack a workspace that does not exist.
-#
-# Publishing force-pushes orphan branches. Set a `SANDBOX_PUSH_TOKEN` secret
-# (a token allowed to force-push this repository) for reliable runs; upstream
-# falls back to `GITHUB_TOKEN`, which needs the `contents: write` granted here.
+# Publishing force-pushes orphan branches. Set a `SANDBOX_PUSH_TOKEN` secret (a
+# token allowed to force-push this repository) for reliable runs; the jobs fall
+# back to GITHUB_TOKEN, which needs the `contents: write` granted here.
 
 on:
   workflow_run:
@@ -47,60 +46,185 @@ on:
         type: string
         default: ""
 
-# The called workflow needs this to force-push orphan branches; a reusable
-# workflow can never hold more permission than its caller grants.
+# Force-pushing orphan branches needs write access.
 permissions:
   contents: write
 
 # Serialise publishes: two concurrent force-pushes to the same orphan branch
-# would race. The upstream publisher adds its own per-branch group as well.
+# would race. Each matrix job adds its own per-branch group below.
 concurrency:
   group: publish-sandbox-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  # Immutable upstream source: the composite actions are checked out of this commit,
+  # and the release binary is verified against the SHA256SUMS published with this tag.
+  SANDBOX_REPOSITORY: Archont561/pixi-sandbox
+  SANDBOX_REF: 7a2dcb1ef45e1319b644d5febb351e12d828a988 # v0.2.0
+  SANDBOX_VERSION: v0.2.0
+  SANDBOX_CONFIG: .pixi-sandbox.toml
+
 jobs:
-  probe:
-    name: probe workspace
+  plan:
+    name: validate sandbox publish plan
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
-      has-workspace: ${{ steps.probe.outputs.has_workspace }}
+      matrix: ${{ steps.plan.outputs.matrix }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout project
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
-      - id: probe
-        shell: bash
+      # Only actions/pinning metadata is taken from upstream — no implementation is copied.
+      - name: Checkout pinned pixi-sandbox actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.SANDBOX_REPOSITORY }}
+          ref: ${{ env.SANDBOX_REF }}
+          path: pixi-sandbox-action
+          persist-credentials: false
+
+      - name: Install verified pixi-sandbox release
+        id: sandbox
+        uses: ./pixi-sandbox-action/.github/actions/setup-pixi-sandbox
+        with:
+          repository: ${{ env.SANDBOX_REPOSITORY }}
+          version: ${{ env.SANDBOX_VERSION }}
+
+      # The reviewed plan is authoritative. It is validated by the binary itself: unknown
+      # platforms, duplicate bundles and targets without embedded helper-tool pins are all
+      # rejected here, before a native runner is ever started.
+      - name: Emit reviewed native matrix
+        id: reviewed
+        if: ${{ inputs.environments == '' }}
+        env:
+          SANDBOX_BIN: ${{ steps.sandbox.outputs.path }}
         run: |
           set -euo pipefail
-          ready=false
-          if [ -f pixi.toml ] && [ -f pixi.lock ] && [ -f .pixi-sandbox.toml ]; then
-            ready=true
-          fi
-          echo "has_workspace=$ready" >> "$GITHUB_OUTPUT"
-          if [ "$ready" = false ]; then
-            echo "::notice::Needs pixi.toml, pixi.lock and .pixi-sandbox.toml to pack a sandbox; skipping publish."
-          fi
+          matrix="$("$SANDBOX_BIN" plan --config "$SANDBOX_CONFIG" --json)"
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+          echo "::notice::publishing the reviewed plan from $SANDBOX_CONFIG"
 
-  sandbox:
-    name: publish sandbox branches
-    needs: probe
-    if: ${{ needs.probe.outputs.has-workspace == 'true' }}
-    permissions:
-      contents: write
-    uses: Archont561/pixi-sandbox/.github/workflows/publish-sandbox.yml@7a2dcb1ef45e1319b644d5febb351e12d828a988 # v0.2.0
-    with:
-      config: .pixi-sandbox.toml
-      # Immutable upstream source: the composite actions are checked out of this
-      # commit, and the release binary is verified against its SHA256SUMS.
-      release-repository: Archont561/pixi-sandbox
-      release-ref: 7a2dcb1ef45e1319b644d5febb351e12d828a988
-      release-version: v0.2.0
-      # Empty keeps the reviewed plan authoritative; a dispatch can override.
-      environments: ${{ github.event.inputs.environments || '' }}
-      platform: ${{ github.event.inputs.platform || '' }}
-    secrets:
-      SANDBOX_PUSH_TOKEN: ${{ secrets.SANDBOX_PUSH_TOKEN }}
+      # A dispatch override bypasses the reviewed plan on purpose (one-off targets, retries).
+      - name: Emit override matrix
+        id: override
+        if: ${{ inputs.environments != '' }}
+        env:
+          ENVIRONMENTS: ${{ inputs.environments }}
+          PLATFORM: ${{ inputs.platform || 'linux-64' }}
+        run: |
+          set -euo pipefail
+          case "$PLATFORM" in
+            linux-64) RUNNER="ubuntu-latest" ;;
+            linux-aarch64) RUNNER="ubuntu-24.04-arm" ;;
+            osx-arm64) RUNNER="macos-14" ;;
+            osx-64) RUNNER="macos-13" ;;
+            win-64) RUNNER="windows-latest" ;;
+            *) RUNNER="ubuntu-latest" ;;
+          esac
+          BRANCH="sandbox/custom-${PLATFORM}"
+          matrix=$(jq -cn \
+            --arg envs "$ENVIRONMENTS" \
+            --arg platform "$PLATFORM" \
+            --arg runner "$RUNNER" \
+            --arg branch "$BRANCH" \
+            '{include:[{bundle:"custom", environments:$envs, platform:$platform, runner:$runner, branch:$branch, cargo_vendor:true}]}')
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+
+      - name: Consolidate matrix output
+        id: plan
+        env:
+          MATRIX_REVIEWED: ${{ steps.reviewed.outputs.matrix }}
+          MATRIX_OVERRIDE: ${{ steps.override.outputs.matrix }}
+        run: |
+          set -euo pipefail
+          matrix="${MATRIX_REVIEWED}${MATRIX_OVERRIDE}"
+          if [ -z "$matrix" ]; then
+            echo "::error::Failed to produce a publish matrix"
+            exit 1
+          fi
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+          echo "Produced matrix: $matrix"
+
+  publish:
+    name: ${{ matrix.bundle }} · ${{ matrix.platform }}
+    needs: plan
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    concurrency:
+      group: sandbox-publish-${{ github.repository }}-${{ matrix.branch }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      # Checked out at the workspace root — not into `project/` — so that
+      # `prefix-dev/setup-pixi` can find pixi.toml. This is the one line upstream's
+      # reusable publisher gets wrong.
+      - name: Checkout project
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Checkout pinned pixi-sandbox actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.SANDBOX_REPOSITORY }}
+          ref: ${{ env.SANDBOX_REF }}
+          path: pixi-sandbox-action
+          persist-credentials: false
+
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e # v0.10.2
+        with:
+          cache: true
+
+      - name: Install verified pixi-sandbox release
+        id: sandbox
+        uses: ./pixi-sandbox-action/.github/actions/setup-pixi-sandbox
+        with:
+          repository: ${{ env.SANDBOX_REPOSITORY }}
+          version: ${{ env.SANDBOX_VERSION }}
+
+      - name: Pack, verify, and publish one native sandbox branch
+        id: publish
+        uses: ./pixi-sandbox-action/.github/actions/publish-pixi-sandbox
+        with:
+          project: .
+          environments: ${{ matrix.environments }}
+          platform: ${{ matrix.platform }}
+          branch: ${{ matrix.branch }}
+          cargo-vendor: ${{ matrix.cargo_vendor }}
+          self-bin: ${{ steps.sandbox.outputs.path }}
+          remote: ${{ github.server_url }}/${{ github.repository }}.git
+          output-dir: ${{ runner.temp }}/pixi-sandbox/${{ matrix.bundle }}-${{ matrix.platform }}
+          push-token: ${{ secrets.SANDBOX_PUSH_TOKEN || github.token }}
+
+      - name: Record published branch
+        if: success()
+        run: |
+          {
+            echo "### Sandbox branch published"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| branch | \`${{ matrix.branch }}\` |"
+            echo "| bundle | \`${{ matrix.bundle }}\` |"
+            echo "| environments | \`${{ matrix.environments }}\` |"
+            echo "| platform | \`${{ matrix.platform }}\` |"
+            echo ""
+            echo "Restore it with \`bash scripts/restore.sh ${{ matrix.branch }}\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload published manifest
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sandbox-manifest-${{ matrix.bundle }}-${{ matrix.platform }}
+          path: ${{ steps.publish.outputs.manifest }}
+          retention-days: 14
