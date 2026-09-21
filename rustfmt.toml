@@ -1,0 +1,19 @@
+# rustfmt.toml — workspace root. See .knowledge/tooling/rustfmt-clippy.md.
+#
+# Only options that are STABLE on the conda-forge rust toolchain: stable
+# rustfmt warns "unstable features are only available in nightly channel"
+# for any other option and ignores it (measured with the restored dev
+# environment, 2026-09-21). Nightly-only settings we deliberately omit:
+# `indent_style`, `format_code_in_doc_comments`, `imports_granularity`,
+# `group_imports`, `imports_layout`, `wrap_comments`.
+#
+# The `edition` is not set here either: `cargo fmt` passes each crate's
+# edition from its manifest (all crates are edition 2024), and pinning a
+# different one in this file would only risk diverging from it.
+
+# Maximum line width
+max_width = 100
+
+# Formatting choices
+use_field_init_shorthand = true # Foo { x } instead of Foo { x: x }
+use_try_shorthand = true        # ? instead of try!()

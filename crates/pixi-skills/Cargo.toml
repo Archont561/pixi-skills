@@ -12,6 +12,11 @@ authors.workspace = true
 name = "pixi-skills"
 path = "src/main.rs"
 
+[lints]
+workspace = true
+# Per-crate exceptions go in the source, not here: with `workspace = true`
+# cargo forbids `[lints.*]` overrides in the same crate.
+
 [dependencies]
 skills-core = { path = "../skills-core", version = "0.1.0" }
 skills-provider-github = { path = "../skills-provider-github", version = "0.1.0" }

@@ -1,0 +1,55 @@
+# cargo-nextest configuration. See .knowledge/tooling/cargo-nextest.md.
+
+[store]
+# Directory for nextest's internal state
+dir = "target/nextest"
+
+# ── Default Profile ────────────────────────────────────────────────
+[profile.default]
+# Run tests with moderate parallelism
+test-threads = "num-cpus"
+
+# Per-test timeout — prevents hung tests from blocking CI
+slow-timeout = { period = "30s", terminate-after = 2 }
+
+# Fail fast — stop on first failure during local development
+fail-fast = true
+
+# Status level — show pass/fail/skip for each test
+status-level = "pass"
+
+# Final status — show summary at the end
+final-status-level = "fail"
+
+# ── CI Profile ─────────────────────────────────────────────────────
+[profile.ci]
+# Run all tests even after failures — collect full failure report
+fail-fast = false
+
+# Stricter timeout in CI
+slow-timeout = { period = "20s", terminate-after = 2 }
+
+# JUnit XML output for CI test reporting
+junit = { path = "target/nextest/ci/junit.xml" }
+
+# Retry flaky tests up to 2 times
+retries = 2
+
+# Status level — show only failures (less noise in CI logs)
+status-level = "fail"
+final-status-level = "all"
+
+# ── Live Test Profile ──────────────────────────────────────────────
+# For integration tests that hit real external services
+[profile.live]
+# Override filter to include live-tests feature
+default-filter = "not test(/^ignored/)"
+
+# Longer timeout for network operations
+slow-timeout = { period = "120s", terminate-after = 1 }
+
+# No retries — live tests should be deterministic
+retries = 0
+
+# Sequential — avoid overwhelming external APIs
+test-threads = 1

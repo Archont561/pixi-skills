@@ -46,6 +46,9 @@ echo "→ doctor $BIN"
 "$BIN" doctor --branch-location "$WORKTREE" --verify || true
 
 echo "→ restore to $OUTPUT"
+# `pixi-sandbox restore --output-path` requires the directory to exist; the documented
+# usage is `restore.sh [branch] [output-path]`, and a fresh path is the normal case.
+mkdir -p "$OUTPUT"
 if [ -f "$WORKTREE/restore.sh" ]; then
   # New branches keep the restore policy next to the root binary.
   bash "$WORKTREE/restore.sh" "$OUTPUT"
@@ -66,10 +69,12 @@ if [ -f "$OUTPUT/.pixi/sandbox-env.sh" ]; then
   echo "→ sourcing $OUTPUT/.pixi/sandbox-env.sh"
   # shellcheck disable=SC1090
   source "$OUTPUT/.pixi/sandbox-env.sh"
-  export PATH="$PWD/.pixi/envs/dev/bin:$PATH"
+  # `$OUTPUT`, not `$PWD`: restoring anywhere except the repository root is the whole
+  # point of the second argument, and pointing PATH back at `$PWD` silently undoes it.
+  export PATH="$OUTPUT/.pixi/envs/dev/bin:$PATH"
   echo "PATH now includes:"
-  echo "  $PWD/.pixi/tools/linux-64"
-  echo "  $PWD/.pixi/envs/dev/bin"
+  echo "  $OUTPUT/.pixi/tools/linux-64"
+  echo "  $OUTPUT/.pixi/envs/dev/bin"
   echo "  pixi() function → bundled pixi"
   echo "Try: pixi --version; cargo --version; cargo check --offline"
 else

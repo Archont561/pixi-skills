@@ -97,6 +97,40 @@ Tools dominate small bundles. Budget accordingly: an airlock branch is
 not a lightweight artifact, and a pixi-skills bundle would carry the
 same ~96 MB tool floor before a single skill is added.
 
+Measured on **this repository's** published branch
+`sandbox/developer-linux-64` — `pixi-sandbox doctor --verify` on the
+restored branch, 2026-09-21 (bundle `developer`, environments `dev` +
+`docs`, linux-64, `cargo_vendor = true`):
+
+| Part | Size |
+|---|---|
+| `dev` environment | 471.8 MiB packed → 1948.3 MiB unpacked (61 blobs) |
+| `docs` environment | 85.4 MiB packed → 333.6 MiB unpacked (40 blobs) |
+| helper tools (`pixi` 0.81.0, `pixi-unpack` 0.7.11, self 0.2.0) | 94.8 MiB |
+| cargo vendor tree (loose, 267 crates) | 310.1 MiB — 32% of the payload |
+| **payload total** | **962.1 MiB, 13 816 blobs, 0 verification failures** |
+
+The Rust toolchain is what makes `dev` heavy; vendoring is a third of
+the payload, so `cargo_vendor = false` is the lever if a bundle must
+shrink. Upstream measured ~110 MB for a two-environment project with
+33 crates, so the delta is almost entirely our 267-crate vendor tree.
+
+> **Airlock proof (2026-09-21).** Restored via `scripts/restore.sh` into
+> a scratch directory *outside* the workspace, with the project
+> manifests copied in (the branch carries environments, not source):
+> `pixi run --frozen --offline -e dev build` compiles the whole
+> workspace in ~42 s with no package network, and `cargo` reports the
+> expected future-incompatibility for `proc-macro-error2 v2.0.1` — the
+> unmaintained advisory `deny.toml` ignores. `test` (nextest),
+> `lint-rust` (clippy) and `lint-toml` (taplo) also pass from the
+> restored tree. Two gates need something the branch does not carry,
+> and the reason is not the package payload: `deny` git-clones
+> `RustSec/advisory-db` when its per-`CARGO_HOME` cache is cold (a warm
+> cache survives the airlock; the yanked check then degrades to a
+> warning), and `lint-actions` (actionlint) wants a Git repository with
+> `.github/workflows` in it. "Airlock" means no *package* network
+> (conda + crates.io), not no network at all.
+
 ## Invariants Worth Stealing
 
 These are the parts of the design that are expensive to rediscover, and
@@ -124,23 +158,25 @@ into a user's working tree:
 
 ## Integration Levels for pixi-skills
 
-Ranked by coupling. **Nothing here is actionable until `pixi.toml` and
-`pixi.lock` exist** — this checkout is documentation only, and
-`pixi-sandbox` requires that pair as a precondition.
+Ranked by coupling. `pixi.toml` and `pixi.lock` landed with Phase 0, so
+the gate on L0/L1 below is lifted; L2/L3 remain gated on the crate being
+pre-1.0.
 
 | Level | What | When | Verdict |
 |---|---|---|---|
-| **L0 — borrow invariants** | Copy the six rules above into the installer design; no dependency | Now (design text) | ✅ Recommended |
-| **L1 — dev/CI tooling** | Pack the `default` + `docs` environments so airlocked contributors and offline CI can bootstrap the toolchain | Phase 0+, once `pixi.toml` lands | ✅ Recommended |
+| **L0 — borrow invariants** | Copy the six rules above into the installer design; no dependency | Recorded above | ✅ Done |
+| **L1 — dev/CI tooling** | Pack the `dev` + `docs` environments so airlocked contributors and offline CI can bootstrap the toolchain | Landed 2026-09-21 | ✅ Live |
 | **L2 — crate dependency** | Depend on `pixi-sandbox-core` for `shard`/`verify`/`manifest` instead of writing our own | Phase 3–4 at the earliest | ⚠️ Re-evaluate; it is pre-1.0 with no stable-interface promise, and `manifest.json` has its own `SCHEMA_VERSION` |
 | **L3 — product surface** | Use `unpack`/`restore` as the sandbox substrate for `pixi skills try` | [P7](../roadmap/improvement-proposals.md), currently "Could" in MoSCoW | ⚠️ Shelling out to `pixi sandbox` beats linking it; both need P7 to be promoted first |
 
-> **Scaffolded and switched on 2026-09-21.** L0 is recorded above and L1 is
-> installed and live. `.pixi-sandbox.toml` declares the bundles below,
-> `scripts/restore.sh` is the airlock one-liner (defaulting to
-> `sandbox/developer-linux-64`, the branch that plan produces), and
-> `.github/workflows/publish-sandbox.yml` publishes from the pinned
-> `7a2dcb1` (v0.2.0) release binary after `ci` is green on `main`.
+> **Scaffolded, switched on, and measured 2026-09-21.** L0 is recorded
+> above and L1 is live: `.pixi-sandbox.toml` declares the `developer`
+> bundle (below), `scripts/restore.sh` is the airlock one-liner
+> (defaulting to `sandbox/developer-linux-64`, the branch that plan
+> produces), and `.github/workflows/publish-sandbox.yml` publishes from
+> the pinned `7a2dcb1` (v0.2.0) release binary after `ci` is green on
+> `main`. The measured payload of the published branch is in the table
+> above.
 >
 > It consumes that release's **composite actions** but not its **reusable
 > workflow**. Verified while wiring this up: the reusable publisher checks the
@@ -161,10 +197,13 @@ Ranked by coupling. **Nothing here is actionable until `pixi.toml` and
 
 ### L1 sketch
 
-`.pixi-sandbox.toml` maps onto the four planned
-[pixi environments](../pixi/environments.md) directly. Environments are
-declared explicitly — the tool refuses to infer them from `pixi.toml`,
-because private test and bench environments should not be published:
+This is the file as actually committed. Environments are declared
+explicitly — the tool refuses to infer them from `pixi.toml`, because
+private test and bench environments should not be published. Only the
+`developer` bundle is declared: `release` is not declared until a
+release environment exists, and `ci` is deliberately absent (it exists
+for the CI solve, and an airlock operator wants the developer surface,
+not a union bundle):
 
 ```toml
 schema = 1
@@ -173,18 +212,9 @@ cargo_vendor = true          # skills-core + rattler deps must build offline
 
 [[bundle]]
 name = "developer"
-environments = ["default", "docs"]
+environments = ["dev", "docs"]
 platforms = ["linux-64"]     # the only target it has validated
-
-[[bundle]]
-name = "release"
-environments = ["release"]
-platforms = ["linux-64"]
-cargo_vendor = false
 ```
-
-`all` is deliberately absent: it exists for the CI solve, and an airlock
-operator wants the developer surface, not a union bundle.
 
 ## A Finding That Changes Our Design
 
@@ -220,7 +250,8 @@ publishes for `linux-64`, `linux-aarch64`, `osx-64`, and `osx-arm64` —
 - **Not on conda-forge yet,** so a conda-native install path for it is
   not available; that matters if we ever want `pixi-skills` itself to
   provision it declaratively.
-- **Weight.** A published branch is ~110 MB for a small project. It is a
+- **Weight.** A published branch is ~110 MB for a small project — and
+  962.1 MiB for this repository's (measured, table above). It is a
   delivery mechanism for airlocked teams, not a casual artifact.
 
 ## Related Concepts

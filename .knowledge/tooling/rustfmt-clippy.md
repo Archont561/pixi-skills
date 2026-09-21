@@ -30,43 +30,47 @@ the formatting is correct.
 ```toml
 # rustfmt.toml (workspace root)
 
-# Use the 2024 edition style (stable in Rust 1.80+)
-edition = "2021"
-
 # Maximum line width
 max_width = 100
-
-# Use block indent (not visual indent)
-indent_style = "Block"
-
-# Imports
-imports_granularity = "Module"        # Group imports by module
-group_imports = "StdExternalCrate"    # Order: std → external → crate
 
 # Formatting choices
 use_field_init_shorthand = true       # Foo { x } instead of Foo { x: x }
 use_try_shorthand = true              # ? instead of try!()
-format_code_in_doc_comments = true    # Format code blocks in /// comments
 ```
+
+Several settings the earlier draft of this page listed are **not** in
+the committed file, because they are **nightly-only** rustfmt features
+(measured with the conda-forge stable toolchain, 2026-09-21 — stable
+rustfmt warns "unstable features are only available in nightly channel"
+and ignores them):
+
+- `indent_style` (block vs visual indent)
+- `format_code_in_doc_comments`
+- `imports_granularity` / `group_imports` (module-granularity import
+  grouping)
+
+Enable any of them only if a nightly rustfmt job is added (ADR-worthy).
+Also, `edition` is not set: `cargo fmt` passes each crate's edition
+from its manifest (all crates are edition 2024), and pinning a
+different one in `rustfmt.toml` would only risk diverging from it.
 
 ### Key Formatting Choices
 
 | Setting | Value | Rationale |
 |---|---|---|
 | `max_width = 100` | 100 chars | Wider than default 80 — modern monitors can handle it. Reduces line wrapping in function signatures with generic bounds. |
-| `imports_granularity = "Module"` | Module-level | `use std::collections::{HashMap, HashSet}` — groups related imports, reduces import line count. |
-| `group_imports = "StdExternalCrate"` | Three groups | Clear visual separation: `std` → `external` crates → `crate`-internal. Deterministic ordering. |
-| `format_code_in_doc_comments = true` | Enabled | Ensures code examples in `///` doc comments are formatted consistently with the rest of the codebase. |
+| `use_field_init_shorthand = true` | Enabled | `Foo { x }` instead of `Foo { x: x }`. |
 
 ### Stable vs Nightly Features
 
-All settings in our `rustfmt.toml` are **stable**. We do not use
-nightly-only rustfmt features (e.g., `imports_layout`,
-`wrap_comments`). This ensures formatting works with the stable
-toolchain installed by pixi.
-
-If a nightly feature is desired in the future, it should be discussed
-as an ADR, since it would require pinning a nightly toolchain in
+Every setting in the committed `rustfmt.toml` is **stable** — the file
+was pruned to the stable set in 2026-09-21 after stable rustfmt warned
+that the earlier draft's `indent_style` and `format_code_in_doc_comments`
+were nightly-only. The nightly-only features we deliberately do *not*
+use include `indent_style`, `format_code_in_doc_comments`,
+`imports_granularity`, `group_imports`, `imports_layout`, and
+`wrap_comments` — if one of them is wanted, it should be discussed as
+an ADR, since it would require pinning a nightly toolchain in
 `pixi.toml`.
 
 ---
@@ -90,15 +94,16 @@ the root `Cargo.toml`:
 # ── Deny (CI fails) ────────────────────────────────────────────────
 # These are bugs or serious code smells:
 unwrap_used = "deny"                  # Use ? or expect() with context
-expect_used = "warn"                  # Prefer ? with anyhow/thiserror
 panic = "deny"                        # No panics in library code
-todo = "warn"                         # TODOs should be tracked in issues
 dbg_macro = "deny"                    # No debug prints in committed code
+
+# ── Warn (context-dependent) ──────────────────────────────────────
+expect_used = "warn"                  # Prefer ? with anyhow/thiserror
+todo = "warn"                         # TODOs should be tracked in issues
 print_stdout = "warn"                 # Use tracing instead of println!
 print_stderr = "warn"                 # Use tracing instead of eprintln!
 
-# ── Warn (doesn't fail CI, but shows in output) ───────────────────
-# Style and idiom suggestions:
+# ── Warn (style and idiom suggestions) ─────────────────────────────
 needless_pass_by_value = "warn"
 redundant_closure_for_method_calls = "warn"
 cloned_instead_of_copied = "warn"
@@ -118,12 +123,18 @@ too_many_arguments = "allow"          # Complex constructors are acceptable
 missing_errors_doc = "allow"          # Errors are self-explanatory via types
 
 [workspace.lints.rust]
-# Compiler-level lints:
-unsafe_code = "deny"                  # No unsafe code
+# Compiler-level lints only — a clippy lint here (or the reverse)
+# triggers `renamed_and_removed_lints`.
+unsafe_code = "forbid"                # No unsafe code (stricter than deny)
 missing_docs = "warn"                 # Public items should be documented
 unused_imports = "deny"               # Clean imports
 dead_code = "warn"                    # Remove unused code
 ```
+
+> `missing_errors_doc` used to be a rustc lint; recent toolchains moved
+> it to clippy (measured 2026-09-21 on rust 1.98: a `[lints.rust]` entry
+> for it warns `renamed_and_removed_lints`). It lives in the clippy
+> table above.
 
 ### Per-Crate Lint Inheritance
 
@@ -135,17 +146,15 @@ Each crate inherits workspace lints:
 workspace = true
 ```
 
-Individual crates can override specific lints if needed:
+Individual crates **cannot** override specific lints in their own
+`Cargo.toml` while `lints.workspace = true` — cargo rejects the mix
+with "cannot override `workspace.lints` in `lints`" (measured, 2026-09-21).
+Per-crate exceptions therefore live in the source, at crate level:
 
-```toml
-# crates/pixi-skills/Cargo.toml (CLI binary)
-[lints]
-workspace = true
-
-[lints.clippy]
-# The CLI binary uses println! for user output
-print_stdout = "allow"
-print_stderr = "allow"
+```rust
+// crates/pixi-skills/src/main.rs (CLI binary)
+// The CLI binary uses println! for user output; that is its job.
+#![allow(clippy::print_stdout, clippy::print_stderr)]
 ```
 
 ### Clippy Lint Categories

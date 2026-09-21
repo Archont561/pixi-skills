@@ -18,6 +18,11 @@ path = "src/lib.rs"
 name = "xtask"
 path = "src/main.rs"
 
+[lints]
+workspace = true
+# Per-crate exceptions go in the source, not here: with `workspace = true`
+# cargo forbids `[lints.*]` overrides in the same crate.
+
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true }
