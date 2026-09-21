@@ -1,3 +1,18 @@
 .venv/
 __pycache__/
 *.py[cod]
+
+# Generated weight — never commit it (pixi-sandbox invariant #6).
+# The sandbox publisher and restore script both stage here.
+.pixi/
+.pixi-sandbox/
+.sandbox-out/
+.sandbox-proof/
+.sandbox-transport/
+vendor/
+
+# Forward-looking: the Rust workspace and Astro docs app do not exist yet, but
+# nothing below should ever be committed once they do.
+target/
+node_modules/
+apps/pixi-skills-docs/dist/

@@ -7,16 +7,27 @@ kind: detail
 tags: [cicd, github-actions, ci, setup-pixi, caching, workflows]
 status: stable
 created: "2025-01-01"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # GitHub Actions
 
-> **Current checkout:** `.github/workflows/knowledge.yml` is the
-> documentation-only validation workflow. It runs the Python validator
-> and regression tests described in [Knowledge Format](../conventions/knowledge-format.md).
-> The product workflows and version notes below are retained design
-> examples, not installed workflows or a new verification of action versions.
+> **Current checkout (2026-09-21):** `.github/workflows/ci.yml` is now the
+> single CI entry point, copying the layout of
+> `Archont561/pixi-sandbox@7a2dcb1`. Its `knowledge` job runs the Python
+> validator and regression tests described in
+> [Knowledge Format](../conventions/knowledge-format.md), replacing the
+> former `knowledge.yml`. Its `workspace` job holds the pixi gates, and a
+> `probe` job keeps them skipped until `pixi.toml` and `pixi.lock` exist.
+> The product workflows and version notes below are therefore still design
+> examples, not installed steps, and not a new verification of action
+> versions.
+>
+> `.github/workflows/publish-sandbox.yml` is a thin caller of the upstream
+> reusable publisher in release-binary mode, pinned to commit `7a2dcb1`
+> (v0.2.0); `.pixi-sandbox.toml` is the reviewed plan it consumes and
+> `scripts/restore.sh` is the airlock one-liner. Rationale and measured
+> payload sizes: [pixi-sandbox](../landscape/pixi-sandbox.md).
 
 In the planned product pipeline, all CI runs through pixi. The GitHub
 Actions workflows use `prefix-dev/setup-pixi` to provision the toolchain
@@ -33,6 +44,14 @@ from conda-forge, without separate Rust or Bun setup actions.
 > | `actions/upload-artifact` / `download-artifact` | `v5` | Artifact actions ship new majors frequently (v7+ adds `archive: false` single-file uploads) — re-check at upgrade time |
 > | `EnricoMi/publish-unit-test-result-action` | `v2` | Still the current major (v2.24.x) |
 > | `softprops/action-gh-release` | `v2` | Still the current major |
+>
+> **Pinning practice (2026-09-21):** the *installed* workflows pin every
+> action to a full commit SHA with a trailing `# vX.Y.Z` comment, and those
+> pins came from `pixi-sandbox@7a2dcb1` plus the previous `knowledge.yml` —
+> so `actions/checkout` and `actions/upload-artifact` are at **v7.0.1** in
+> practice, ahead of the v5 rows above. `.github/dependabot.yml` maintains
+> the pins. The examples below keep tag refs for readability; convert to
+> SHA + comment when any of them is installed.
 
 ---
 

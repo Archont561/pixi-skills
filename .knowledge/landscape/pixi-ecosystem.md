@@ -7,7 +7,7 @@ kind: detail
 tags: [landscape, pixi, rattler, conda, prefix-dev, pixi-pack, rattler-build]
 status: stable
 created: "2025-01-01"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # Pixi Ecosystem
@@ -77,6 +77,25 @@ create self-contained, offline-deployable environment bundles.
   supports offline operation
 - The conda provider works transparently with both online channels
   and local channels produced by pixi-pack
+
+### pixi-sandbox
+
+A sibling pixi extension (`Archont561/pixi-sandbox`, v0.2.0) that sits
+**one layer above pixi-pack**: it packs conda payloads, vendored cargo
+crates, and sha256-pinned helper tools into a Git orphan branch and
+restores them on a machine with no network. Not a skills tool.
+
+**Relevance to pixi-skills**:
+- It is our offline/airgap differentiator already implemented and
+  measured, which makes it evidence rather than aspiration
+- Its restore invariants (verify-before-write, never `/tmp`, nothing
+  downloaded at restore time) transfer to `SkillInstaller`
+- It is a candidate sandbox substrate for the deferred P7
+  `pixi skills try` proposal
+- It recorded the conda-forge `bun`/win-64 solve failure that affects
+  our own platform plan
+
+See [pixi-sandbox](./pixi-sandbox.md) for the full analysis.
 
 ### rattler-build
 
@@ -158,6 +177,7 @@ a conda channel hosting service (prefix.dev) with:
 | pixi | Production-ready, ~7k GitHub stars | v0.81.0 (2026-09) | Stable CLI, evolving config format |
 | rattler | Production-ready | `rattler_conda_types` 0.50.0 (2026-09); py-rattler 0.25 (lockfile v7) | Crate APIs still evolving fast — minor bumps break; pin + test in CI |
 | pixi-pack | Production-ready | — | Stable CLI |
+| pixi-sandbox | Pre-1.0 sibling project | v0.2.0 (2026-09-21) | No stable-interface promise; flags and `manifest.json` schema may change |
 | rattler-build | Production-ready | — | Stable CLI, recipe format evolving |
 | prefix.dev | Production SaaS | — | Stable API |
 
@@ -176,5 +196,6 @@ a conda channel hosting service (prefix.dev) with:
 ## Related Concepts
 
 - [Landscape — Context](./CONTEXT.md)
+- [pixi-sandbox](./pixi-sandbox.md)
 - [skills-provider-conda](../crates/skills-provider-conda.md)
 - [Dependency Graph](../architecture/dependency-graph.md)

@@ -1,0 +1,45 @@
+# Reviewed publish plan consumed by `pixi-sandbox plan` and by
+# .github/workflows/publish-sandbox.yml (release-binary mode).
+#
+# Layout copied from Archont561/pixi-sandbox@7a2dcb1 (.pixi-sandbox.toml).
+#
+# Environments are declared explicitly — the packer refuses to infer them from
+# pixi.toml, because private test and bench environments should never be
+# published. Add a platform only after a native runner has produced a transport
+# that passed `pixi-sandbox doctor --verify` and an airlock restore proof;
+# linux-64 is the only target upstream has validated, so it is the only one
+# declared here.
+#
+# `all` is deliberately absent: it exists to give CI one solve, and an airlock
+# operator wants the developer surface, not a union bundle that also drags
+# convco and every lint tool onto the branch.
+#
+# This file is inert until pixi.toml and pixi.lock exist (Phase 0). Both CI
+# workflows probe for them and skip rather than fail — see the `probe` job in
+# .github/workflows/ci.yml and .github/workflows/publish-sandbox.yml.
+#
+# Rationale and the measured payload sizes: .knowledge/landscape/pixi-sandbox.md
+schema = 1
+branch_prefix = "sandbox"
+
+# Vendor the Cargo workspace so `cargo build --offline` works on the airlock.
+# Skills-core pulls rattler, which is a large dependency tree — vendoring it is
+# the difference between an offline build and no build.
+cargo_vendor = true
+
+# Day-to-day surface: Rust toolchain + lint tools, and the docs toolchain.
+# Note that `docs` carries bun, which has no win-64 build on conda-forge — one
+# more reason this bundle is linux-64 only for now. See
+# .knowledge/pixi/conda-forge-packages.md §"Windows and the docs feature".
+[[bundle]]
+name = "developer"
+environments = ["default", "docs"]
+platforms = ["linux-64"]
+
+# Release tooling (convco) for cutting a release from an airlocked machine.
+# No vendoring: a release box needs the tools, not necessarily a cold build.
+[[bundle]]
+name = "release"
+environments = ["release"]
+platforms = ["linux-64"]
+cargo_vendor = false

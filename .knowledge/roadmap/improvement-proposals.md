@@ -7,7 +7,7 @@ kind: detail
 tags: [roadmap, proposals, strategy, differentiation, standard, security]
 status: draft
 created: "2026-09-17"
-updated: "2026-09-17"
+updated: "2026-09-21"
 ---
 
 # Improvement Proposals — 2026-09 Strategy Review
@@ -278,6 +278,29 @@ pixi skills try github:anthropics/skills@pdf
 Evaluating a skill stops mutating the repo — security and hygiene in
 one move. No competitor can do this without an environment manager;
 we're built on one.
+
+**Sandbox substrate (2026-09-21).** The "throwaway sandbox" step above
+is the one piece we do not have to design from scratch. The sibling
+project [pixi-sandbox](../landscape/pixi-sandbox.md) already implements
+verified, transactional materialization of a pixi environment into a
+target directory, with the invariants that make it safe: verify before
+write, treat the fetched source as read-only, never stage in `/tmp`, and
+preserve the previous generation when a restore fails. Three coupling
+options, cheapest first:
+
+1. **Borrow the invariants** into our own installer and `try` sandbox —
+   no dependency, available now.
+2. **Shell out** to `pixi sandbox unpack` for the ephemeral environment.
+3. **Link `pixi-sandbox-core`** for its `shard`/`verify`/`manifest`
+   logic.
+
+Recommendation: option 1 while P7 stays a "Could", and revisit 2 only if
+P7 is promoted. Option 3 is premature — the project is pre-1.0 with no
+stable-interface promise, and its `manifest.json` carries its own schema
+version that we would inherit. Whichever is chosen, P7 also needs the
+~96 MB bundled-tool floor to be irrelevant for a throwaway environment,
+which argues for reusing the developer's already-installed pixi
+environment rather than transporting one.
 
 ---
 
