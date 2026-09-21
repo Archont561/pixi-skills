@@ -105,7 +105,11 @@ jobs:
           SANDBOX_BIN: ${{ steps.sandbox.outputs.path }}
         run: |
           set -euo pipefail
-          matrix="$("$SANDBOX_BIN" plan --config "$SANDBOX_CONFIG" --json)"
+          # `plan --json` emits {"schema":1,"include":[…]}. A job matrix may only contain
+          # dimension names plus `include`/`exclude`, and `schema: 1` is read as a
+          # one-value dimension — which is invalid, and kills the `publish` job before it
+          # starts. Keep `include`, and nothing else.
+          matrix="$("$SANDBOX_BIN" plan --config "$SANDBOX_CONFIG" --json | jq -c '{include: .include}')"
           printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
           echo "::notice::publishing the reviewed plan from $SANDBOX_CONFIG"
 
@@ -149,6 +153,9 @@ jobs:
           fi
           printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
           echo "Produced matrix: $matrix"
+          # A matrix that fails to evaluate kills the publish job before any step runs, and
+          # the reason only exists in the run log. Surface it as an annotation instead.
+          echo "::notice::publish matrix: $matrix"
 
   publish:
     name: ${{ matrix.bundle }} · ${{ matrix.platform }}
