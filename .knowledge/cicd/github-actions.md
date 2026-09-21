@@ -12,22 +12,31 @@ updated: "2026-09-21"
 
 # GitHub Actions
 
-> **Current checkout (2026-09-21):** `.github/workflows/ci.yml` is now the
-> single CI entry point, copying the layout of
-> `Archont561/pixi-sandbox@7a2dcb1`. Its `knowledge` job runs the Python
-> validator and regression tests described in
-> [Knowledge Format](../conventions/knowledge-format.md), replacing the
-> former `knowledge.yml`. Its `workspace` job holds the pixi gates, and a
-> `probe` job keeps them skipped until `pixi.toml` and `pixi.lock` exist.
-> The product workflows and version notes below are therefore still design
-> examples, not installed steps, and not a new verification of action
-> versions.
+> **Current checkout (2026-09-21):** `.github/workflows/ci.yml` is the single
+> CI entry point, keeping the `pixi-sandbox@7a2dcb1` rule that every step is
+> one `pixi run -e dev <task>` line. It is now one job instead of three: the
+> `probe` and `knowledge` jobs went away with the Python validator they
+> guarded (`scripts/check_knowledge.py`, `requirements-knowledge.txt` and
+> `tests/` are no longer in the repository), and the `workspace` job became
+> the whole file. Nine gates run — fmt-check, lint-rust, deny, lint-actions,
+> lint-toml, test, test-doc, coverage, and codecov — while `lint-docs` and
+> `docs-build` stay behind a
+> `hashFiles('apps/pixi-skills-docs/package.json')` guard until the Phase 4
+> docs app exists. The product workflows and version notes below are
+> therefore still design examples, not installed steps.
 >
-> `.github/workflows/publish-sandbox.yml` is a thin caller of the upstream
-> reusable publisher in release-binary mode, pinned to commit `7a2dcb1`
-> (v0.2.0); `.pixi-sandbox.toml` is the reviewed plan it consumes and
-> `scripts/restore.sh` is the airlock one-liner. Rationale and measured
-> payload sizes: [pixi-sandbox](../landscape/pixi-sandbox.md).
+> `.github/workflows/publish-sandbox.yml` consumes the `pixi-sandbox` v0.2.0
+> release binary and the pinned composite actions from commit `7a2dcb1`, but
+> it no longer `uses:` the upstream *reusable* workflow: that workflow checks
+> the project out into `project/` and then runs `setup-pixi` without
+> `working-directory: project`, so `pixi install` cannot find a manifest and
+> the plan job dies before a matrix exists (measured upstream: two runs
+> failing in ~10s at "Install Pixi (local mode)", and no `sandbox/*`
+> branches). Owning the job graph — project checked out at the workspace
+> root — is the fix. `.pixi-sandbox.toml` remains the reviewed plan and
+> `scripts/restore.sh` the airlock one-liner, defaulting to
+> `sandbox/developer-linux-64`. Rationale and measured payload sizes:
+> [pixi-sandbox](../landscape/pixi-sandbox.md).
 
 In the planned product pipeline, all CI runs through pixi. The GitHub
 Actions workflows use `prefix-dev/setup-pixi` to provision the toolchain
