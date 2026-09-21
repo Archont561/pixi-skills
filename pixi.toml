@@ -89,6 +89,9 @@ lint-actions = "actionlint"
 # Inert until a local `pixi-sandbox` command exists; kept for upstream parity.
 lint-sandbox-plan = "pixi-sandbox plan --config .pixi-sandbox.toml --json"
 lint-toml = "taplo fmt --check pixi.toml .pixi-sandbox.toml Cargo.toml crates/skills-core/Cargo.toml crates/skills-provider-github/Cargo.toml crates/skills-provider-conda/Cargo.toml crates/skills-provider-prefix/Cargo.toml crates/skills-provider-pypi/Cargo.toml crates/pixi-skills/Cargo.toml xtask/Cargo.toml deny.toml"
+# Needs apps/pixi-skills-docs (Phase 4). CI guards this with
+# `hashFiles('apps/pixi-skills-docs/package.json')`, so it is skipped — not failed —
+# until the docs app exists.
 lint-docs = "biome check apps/pixi-skills-docs"
 # conventional-commit check for the `commit-msg` hook; reads the proposed message from stdin
 lint-commit = "convco check --from-stdin"
@@ -96,13 +99,14 @@ lint-commit = "convco check --from-stdin"
 changelog = "convco changelog > CHANGELOG.md"
 changelog-preview = "convco changelog"
 # one line for the whole lint gate (needs the `dev` environment: rust + utils + docs)
+# `lint-docs` is deliberately absent: it needs apps/pixi-skills-docs, which lands with the
+# docs site (Phase 4). Add it back here in the same PR that adds the app.
 lint = { depends-on = [
   "fmt-check",
   "lint-rust",
   "deny",
   "lint-actions",
   "lint-toml",
-  "lint-docs",
 ] }
 
 # docs
@@ -125,7 +129,8 @@ package = "pixi publish --path crates/pixi-skills --build-dir .publish/build --t
 sandbox-plan = "pixi-sandbox plan --config .pixi-sandbox.toml"
 sandbox-pack = "pixi-sandbox pack --repo-root . --envs dev --output-dir .sandbox-out --platform linux-64 --cargo-vendor --fetch-tools --self-bin target/release/pixi-sandbox"
 sandbox-doctor = "pixi-sandbox doctor --branch-location .sandbox-out --verify"
-sandbox-publish = "pixi-sandbox publish --input-dir .sandbox-out --branch-name sandbox/dev-linux-64 --remote origin"
+# The branch name is what `.pixi-sandbox.toml` publishes: branch_prefix + bundle + platform.
+sandbox-publish = "pixi-sandbox publish --input-dir .sandbox-out --branch-name sandbox/developer-linux-64 --remote origin"
 # One-liner offline reconstruction from orphan branch, with PATH aliases wired
 # like setup-pixi.
 sandbox-restore = "bash scripts/restore.sh"

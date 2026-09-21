@@ -13,6 +13,8 @@ apps/pixi-skills-docs/.astro/
 # python scratch (the reference prototype is run directly, never imported)
 __pycache__/
 *.pyc
+# pixi build output (`pixi run package`: --build-dir / --target-dir)
+.publish/
 # coverage / reports
 coverage/
 lcov.info

@@ -51,7 +51,11 @@ jobs:
       - run: pixi run -e dev deny
       - run: pixi run -e dev lint-actions
       - run: pixi run -e dev lint-toml
-      - run: pixi run -e dev lint-docs
+      # `lint-docs` and `docs-build` need apps/pixi-skills-docs, which lands with the docs
+      # site (Phase 4). The guard keeps the steps honest — they really run the moment the
+      # app exists — instead of turning CI red for a directory that is not here yet.
+      - if: hashFiles('apps/pixi-skills-docs/package.json') != ''
+        run: pixi run -e dev lint-docs
       - run: pixi run -e dev test
       - run: pixi run -e dev test-doc
       - run: pixi run -e dev coverage

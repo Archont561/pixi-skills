@@ -8,7 +8,15 @@ all-features = true
 [advisories]
 version = 2
 yanked = "warn"
-ignore = []
+# Only IDs that are individually justified, never a blanket downgrade: `ignore` is
+# per-advisory, so a future vulnerability in either crate still fails the build.
+# Both are *unmaintained*, not vulnerable, and both say "No safe upgrade is available".
+# They are transitive dependencies of the CLI's planned table and progress output —
+# `pixi-skills` does not call either one yet — so revisit when Phase 2 lands and the
+# dependency set is actually exercised.
+#   RUSTSEC-2025-0119  number_prefix 0.4.0   ← indicatif ← pixi-skills
+#   RUSTSEC-2026-0173  proc-macro-error2 2.0.1 ← tabled_derive ← tabled ← pixi-skills
+ignore = ["RUSTSEC-2025-0119", "RUSTSEC-2026-0173"]
 
 [licenses]
 version = 2

@@ -4,6 +4,11 @@ description = "Build automation — never published"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+# `publish = false` keeps it out of any release, but `cargo deny check` still walks it:
+# without a license field the licenses check fails with "xtask is unlicensed".
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
 publish = false
 
 [lib]
