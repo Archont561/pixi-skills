@@ -30,9 +30,9 @@ publish = false
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 xshell = "0.2"
-toml_edit = "0.22"
-schemars = "0.8"
-sha2 = "0.10"
+toml_edit = "0.25"
+schemars = "1.2"
+sha2 = "0.11"
 flate2 = "0.2"
 tar = "0.4"
 glob = "0.3"
