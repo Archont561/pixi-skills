@@ -53,7 +53,7 @@ schemars = "0.8"
 # CLI UX
 console = "0.16"
 indicatif = "0.18"
-tabled = "0.18"
+tabled = "0.22"
 dialoguer = "0.12"
 # dev
 assert_cmd = "2"
