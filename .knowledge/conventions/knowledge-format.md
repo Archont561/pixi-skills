@@ -150,6 +150,15 @@ known rather than manufacturing metadata.
 
 ## Validation
 
+> **Status (2026-09-21): no validator is installed.** The commands below
+> describe the Python checker that used to live here. `scripts/check_knowledge.py`,
+> `requirements-knowledge.txt` and `tests/` have since been removed from the
+> repository, the `knowledge` job is gone from `.github/workflows/ci.yml`, and
+> the Dependabot `pip` entry that tracked the requirements file with it. The
+> format rules above are still the bundle's contract — they are just enforced
+> by review and by the [update log](../log.md) now, not by a script. Keep this
+> section as the record of what the tool checked in case it is restored.
+
 From the repository root, with Python 3.11 or newer:
 
 ```sh
@@ -178,14 +187,13 @@ and existing local file targets that stay inside the bundle.
 verify factual claims, or validate all optional provenance/computation
 contracts or attestations. Passing it is not a trust or security verdict.
 
-The `knowledge` job of `.github/workflows/ci.yml` runs the tests and
-linted validation for pull requests and changes to `main`; it replaced the
-former `knowledge.yml` when the CI layout was unified. This small Python
-check is bootstrap maintenance tooling for the documentation-only
-checkout. It does not pretend that the planned pixi/Cargo/Bun workspace
-already exists, and no tooling is needed merely to read or distribute the
-bundle. The rest of that workflow is gated on `pixi.toml` and stays
-skipped until the workspace lands.
+The `knowledge` job of `.github/workflows/ci.yml` used to run the tests and
+linted validation for pull requests and changes to `main`; it had replaced
+the former `knowledge.yml` when the CI layout was unified, and it was removed
+with the checker in Phase 0. That job was also the only reason the checkout
+needed Python at all: no tooling is required to read or distribute the bundle,
+and the workspace it used to defer to now exists, so `ci` is a single pixi job
+with no Python in it.
 
 ## Migration Audit — 2026-09-17
 

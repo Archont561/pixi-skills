@@ -1,0 +1,27 @@
+[package]
+name = "skills-provider-conda"
+description = "SkillRegistry implementation for conda channels (via rattler)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+skills-core = { path = "../skills-core", version = "0.1.0" }
+serde = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+# TODO(Phase 3): the rattler_* crates that power this provider (see
+# .knowledge/crates/skills-provider-conda.md). Added when the conda provider is
+# implemented — the workspace solves faster without them today.
+# rattler_conda_types = "0.31"
+# rattler_repodata_gateway = "0.31"
+# rattler_package_streaming = "0.31"
+# rattler_lock = "0.31"
+# rattler_networking = "0.31"
+
+[dev-dependencies]
+tempfile = { workspace = true }

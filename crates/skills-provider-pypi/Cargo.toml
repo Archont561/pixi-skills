@@ -1,0 +1,18 @@
+[package]
+name = "skills-provider-pypi"
+description = "SkillRegistry implementation for PyPI (future)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+skills-core = { path = "../skills-core", version = "0.1.0" }
+reqwest = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

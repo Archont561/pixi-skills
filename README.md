@@ -1,11 +1,33 @@
 # pixi-skills
 
 Design and knowledge for a provider-agnostic, reproducible skills manager
-for AI coding agents.
+for AI coding agents — and, since Phase 0, the workspace that tooling will
+grow into.
 
-This checkout currently contains documentation and its validation tooling,
-not yet the Rust CLI, pixi workspace, or Astro application described in
-the design.
+| Layer | State |
+|---|---|
+| [Knowledge bundle](#knowledge-bundle) | Design, ADRs, roadmap, ecosystem research — complete and maintained |
+| Rust workspace | **Phase 0 scaffold**: seven crates compile, one placeholder test runs, CI is green. The real model lands with [Phase 0](.knowledge/roadmap/mvp-phases.md) |
+| pixi workspace | Live: `pixi.toml` + `pixi.lock` for `linux-64`, `osx-arm64`, `win-64` |
+| Docs site (`apps/pixi-skills-docs`) | Planned with Phase 4; its CI gates are guarded until it exists |
+
+## Quickstart
+
+```sh
+pixi run -e dev build        # cargo build --workspace
+pixi run -e dev test         # cargo nextest run --workspace
+pixi run -e dev lint         # fmt · clippy · cargo-deny · actionlint · taplo
+```
+
+Every command CI runs is one of these tasks, so the authoritative list is
+`[tasks]` in [`pixi.toml`](pixi.toml) and the CI job is twelve lines of
+`pixi run -e dev <task>`. See [Pixi Tasks](.knowledge/pixi/tasks.md).
+
+The crate layout is `skills-core` (model, traits, installer) plus four
+provider crates and the `pixi-skills` CLI; the CLI is also a pixi extension,
+so `pixi skills …` is the intended entry point. Design:
+[Crates](.knowledge/crates/index.md),
+[Dependency graph](.knowledge/architecture/dependency-graph.md).
 
 ## Knowledge bundle
 
@@ -19,42 +41,36 @@ progressive-disclosure indexes, and an [update log](.knowledge/log.md).
 - [Roadmap](.knowledge/roadmap/index.md)
 - [Authoring rules and migration audit](.knowledge/conventions/knowledge-format.md)
 
-## Validate changes
-
-Python 3.11 or newer is needed only for validation, not to read the bundle.
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements-knowledge.txt
-.venv/bin/python scripts/check_knowledge.py --lint
-.venv/bin/python -m unittest discover -s tests -v
-```
-
-Without `--lint`, the checker tests required OKF document structure only.
-With it, the repository also requires descriptive metadata, complete
-indexes, and working in-bundle file links. It does not verify factual
-claims, external URLs, fragment anchors, or attested computations.
-
-The same tests and linted validation run in the `knowledge` job of
-[the ci workflow](.github/workflows/ci.yml).
+The bundle is prose and frontmatter only — there is no Python validator in
+this repository any more, so nothing needs installing to read or edit it.
+Changes are reviewed like any other Markdown; the [update log](.knowledge/log.md)
+is the place to record substantive ones.
 
 ## Continuous integration
 
-`.github/` mirrors the layout of
-[Archont561/pixi-sandbox](https://github.com/Archont561/pixi-sandbox) at
-v0.2.0, so the pipeline is already shaped for the workspace this bundle
-designs:
-
 | Path | Role |
 |---|---|
-| `.github/workflows/ci.yml` | Single CI entry point: `probe` → `knowledge` (runs today) → `workspace` (skipped until `pixi.toml` + `pixi.lock` exist) |
-| `.github/workflows/publish-sandbox.yml` | Thin caller of the upstream reusable publisher, in release-binary mode, pinned by commit SHA |
-| `.pixi-sandbox.toml` | Reviewed publish plan: which pixi environments become airlock branches |
-| `.github/dependabot.yml` | Keeps the SHA-pinned actions current |
+| `.github/workflows/ci.yml` | Single entry point: `fmt-check` → `lint-rust` → `deny` → `lint-actions` → `lint-toml` → (`lint-docs`) → `test` → `test-doc` → `coverage` → (`docs-build`) |
+| `.github/workflows/publish-sandbox.yml` | After `ci` is green on `main`: packs the pixi environments into an orphan branch |
+| `.pixi-sandbox.toml` | Reviewed publish plan: which environments become which sandbox branch |
+| `.github/dependabot.yml` | Keeps the SHA-pinned actions and the Cargo workspace current |
 | `scripts/restore.sh` | Airlock one-liner: fetch → verify → restore → wire PATH |
 
-Nothing in that layout executes until the pixi workspace exists — every
-gate probes for it and skips rather than fails. See
-[pixi-sandbox](.knowledge/landscape/pixi-sandbox.md) for why it is worth
-having, and [GitHub Actions](.knowledge/cicd/github-actions.md) for the
-pipeline design.
+### Sandbox (airlock) branches
+
+`.pixi-sandbox.toml` declares one bundle — `developer`, holding the `dev` and
+`docs` pixi environments for `linux-64` — so a green `main` publishes
+`sandbox/developer-linux-64`. Restore it on a machine with no network:
+
+```sh
+bash scripts/restore.sh                       # defaults to sandbox/developer-linux-64
+bash scripts/restore.sh sandbox/developer-linux-64 ./airlock
+```
+
+`publish-sandbox.yml` consumes the sha256-verified `pixi-sandbox` v0.2.0
+release binary and the pinned composite actions from
+[Archont561/pixi-sandbox](https://github.com/Archont561/pixi-sandbox); it does
+not call that repository's *reusable* workflow, whose job graph cannot see a
+`pixi.toml` checked out into a subdirectory. Background and measured payload
+sizes: [pixi-sandbox](.knowledge/landscape/pixi-sandbox.md),
+[GitHub Actions](.knowledge/cicd/github-actions.md).
