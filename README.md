@@ -35,5 +35,26 @@ With it, the repository also requires descriptive metadata, complete
 indexes, and working in-bundle file links. It does not verify factual
 claims, external URLs, fragment anchors, or attested computations.
 
-The same tests and linted validation run in
-[the knowledge workflow](.github/workflows/knowledge.yml).
+The same tests and linted validation run in the `knowledge` job of
+[the ci workflow](.github/workflows/ci.yml).
+
+## Continuous integration
+
+`.github/` mirrors the layout of
+[Archont561/pixi-sandbox](https://github.com/Archont561/pixi-sandbox) at
+v0.2.0, so the pipeline is already shaped for the workspace this bundle
+designs:
+
+| Path | Role |
+|---|---|
+| `.github/workflows/ci.yml` | Single CI entry point: `probe` → `knowledge` (runs today) → `workspace` (skipped until `pixi.toml` + `pixi.lock` exist) |
+| `.github/workflows/publish-sandbox.yml` | Thin caller of the upstream reusable publisher, in release-binary mode, pinned by commit SHA |
+| `.pixi-sandbox.toml` | Reviewed publish plan: which pixi environments become airlock branches |
+| `.github/dependabot.yml` | Keeps the SHA-pinned actions current |
+| `scripts/restore.sh` | Airlock one-liner: fetch → verify → restore → wire PATH |
+
+Nothing in that layout executes until the pixi workspace exists — every
+gate probes for it and skips rather than fails. See
+[pixi-sandbox](.knowledge/landscape/pixi-sandbox.md) for why it is worth
+having, and [GitHub Actions](.knowledge/cicd/github-actions.md) for the
+pipeline design.

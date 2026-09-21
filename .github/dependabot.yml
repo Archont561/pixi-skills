@@ -1,0 +1,102 @@
+# Layout copied from Archont561/pixi-sandbox@7a2dcb1 (.github/dependabot.yml),
+# reduced to the ecosystems this repository actually has today.
+#
+# GitHub Actions is live now: ci.yml and publish-sandbox.yml pin every action to
+# a full commit SHA with a trailing `# vX.Y.Z` comment, which is exactly the
+# form Dependabot updates in place. The Cargo and npm entries are staged but
+# commented out, because enabling an ecosystem whose manifest does not exist yet
+# only produces a permanent "Dependabot can't access your manifest" error in the
+# UI. Uncomment each at the phase that introduces it.
+
+version: 2
+updates:
+  # GitHub Actions (pinned to full SHA with a trailing # vX.Y.Z comment)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "ci"
+      include: scope
+    # Group patch/minor updates to reduce PR noise; major stays separate for review
+    groups:
+      actions-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Python validation tooling for the knowledge bundle (requirements-knowledge.txt)
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - knowledge
+    commit-message:
+      prefix: "chore"
+      include: scope
+    groups:
+      knowledge-patch:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+          - minor
+
+  # Rust dependencies (Cargo.toml workspace) — enable at Phase 0.
+  # - package-ecosystem: cargo
+  #   directory: "/"
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #     time: "08:00"
+  #   open-pull-requests-limit: 10
+  #   labels:
+  #     - dependencies
+  #     - rust
+  #   commit-message:
+  #     prefix: "chore"
+  #     prefix-development: "chore"
+  #     include: scope
+  #   groups:
+  #     cargo-patch:
+  #       patterns:
+  #         - "*"
+  #       update-types:
+  #         - patch
+  #         - minor
+
+  # Docs site (Astro + Starlight) — enable when apps/pixi-skills-docs exists.
+  # Upstream tracks /docs with the npm ecosystem reading package.json + bun.lock.
+  # - package-ecosystem: npm
+  #   directory: "/apps/pixi-skills-docs"
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #     time: "08:00"
+  #   open-pull-requests-limit: 5
+  #   labels:
+  #     - dependencies
+  #     - docs
+  #   commit-message:
+  #     prefix: "chore"
+  #     include: scope
+  #   groups:
+  #     docs-patch:
+  #       patterns:
+  #         - "*"
+  #       update-types:
+  #         - patch
+  #         - minor

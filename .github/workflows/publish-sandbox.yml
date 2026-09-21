@@ -1,0 +1,106 @@
+name: publish-sandbox
+
+# Thin caller around the reusable publisher in Archont561/pixi-sandbox.
+#
+# Layout copied from pixi-sandbox@7a2dcb1 (.github/workflows/publish-sandbox.yml)
+# and reduced to the caller side. That file is 414 lines because it also
+# *implements* the publisher; this one only invokes it. We consume it in
+# **release-binary mode** (`release-repository` + an immutable `release-ref`),
+# because the upstream *local* mode runs `cargo build -p pixi-sandbox` inside
+# the checked-out project and then calls
+# `./project/.github/actions/publish-pixi-sandbox` — neither of which will ever
+# exist in this repository. Release mode instead downloads a sha256-verified
+# release asset and checks the composite actions out of the pinned upstream
+# commit, so nothing is vendored here and nothing is forked.
+#
+# The reviewed `.pixi-sandbox.toml` is the single source of truth for what gets
+# published: the upstream `plan` job runs `pixi-sandbox plan --json` against it,
+# rejects unknown platforms and unused runner overrides, and expands it into one
+# native job per bundle × platform. That validation is why this repository needs
+# no `lint-sandbox-plan` gate of its own.
+#
+# Triggers:
+# - workflow_run: after `ci` succeeds on main
+# - workflow_dispatch: manual, with optional environment/platform overrides
+#
+# Dormant until Phase 0: the `probe` gate below keeps this workflow from
+# attempting to pack a workspace that does not exist.
+#
+# Publishing force-pushes orphan branches. Set a `SANDBOX_PUSH_TOKEN` secret
+# (a token allowed to force-push this repository) for reliable runs; upstream
+# falls back to `GITHUB_TOKEN`, which needs the `contents: write` granted here.
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types:
+      - completed
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environments:
+        description: Comma-separated pixi environments to pack (overrides .pixi-sandbox.toml when set)
+        type: string
+        default: ""
+      platform:
+        description: Target platform for the packed environments (overrides .pixi-sandbox.toml when set)
+        type: string
+        default: ""
+
+# The called workflow needs this to force-push orphan branches; a reusable
+# workflow can never hold more permission than its caller grants.
+permissions:
+  contents: write
+
+# Serialise publishes: two concurrent force-pushes to the same orphan branch
+# would race. The upstream publisher adds its own per-branch group as well.
+concurrency:
+  group: publish-sandbox-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    name: probe workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      has-workspace: ${{ steps.probe.outputs.has_workspace }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - id: probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          if [ -f pixi.toml ] && [ -f pixi.lock ] && [ -f .pixi-sandbox.toml ]; then
+            ready=true
+          fi
+          echo "has_workspace=$ready" >> "$GITHUB_OUTPUT"
+          if [ "$ready" = false ]; then
+            echo "::notice::Needs pixi.toml, pixi.lock and .pixi-sandbox.toml to pack a sandbox; skipping publish."
+          fi
+
+  sandbox:
+    name: publish sandbox branches
+    needs: probe
+    if: ${{ needs.probe.outputs.has-workspace == 'true' }}
+    permissions:
+      contents: write
+    uses: Archont561/pixi-sandbox/.github/workflows/publish-sandbox.yml@7a2dcb1ef45e1319b644d5febb351e12d828a988 # v0.2.0
+    with:
+      config: .pixi-sandbox.toml
+      # Immutable upstream source: the composite actions are checked out of this
+      # commit, and the release binary is verified against its SHA256SUMS.
+      release-repository: Archont561/pixi-sandbox
+      release-ref: 7a2dcb1ef45e1319b644d5febb351e12d828a988
+      release-version: v0.2.0
+      # Empty keeps the reviewed plan authoritative; a dispatch can override.
+      environments: ${{ github.event.inputs.environments || '' }}
+      platform: ${{ github.event.inputs.platform || '' }}
+    secrets:
+      SANDBOX_PUSH_TOKEN: ${{ secrets.SANDBOX_PUSH_TOKEN }}

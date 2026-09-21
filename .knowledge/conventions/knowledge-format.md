@@ -7,7 +7,7 @@ kind: detail
 tags: [conventions, knowledge, okf, metadata, navigation, validation]
 status: stable
 created: "2026-09-17"
-updated: "2026-09-17"
+updated: "2026-09-21"
 sources:
   - id: okf-v02
     resource: https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/62432a095456147ee71e70ac6e4dc0d2dea3ac30/okf/SPEC.md
@@ -178,11 +178,14 @@ and existing local file targets that stay inside the bundle.
 verify factual claims, or validate all optional provenance/computation
 contracts or attestations. Passing it is not a trust or security verdict.
 
-`.github/workflows/knowledge.yml` runs the tests and linted validation for
-pull requests and changes to `main`. This small Python check is bootstrap
-maintenance tooling for the documentation-only checkout. It does not
-pretend that the planned pixi/Cargo/Bun workspace already exists, and no
-tooling is needed merely to read or distribute the bundle.
+The `knowledge` job of `.github/workflows/ci.yml` runs the tests and
+linted validation for pull requests and changes to `main`; it replaced the
+former `knowledge.yml` when the CI layout was unified. This small Python
+check is bootstrap maintenance tooling for the documentation-only
+checkout. It does not pretend that the planned pixi/Cargo/Bun workspace
+already exists, and no tooling is needed merely to read or distribute the
+bundle. The rest of that workflow is gated on `pixi.toml` and stays
+skipped until the workspace lands.
 
 ## Migration Audit — 2026-09-17
 

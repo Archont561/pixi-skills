@@ -135,6 +135,19 @@ Ranked by coupling. **Nothing here is actionable until `pixi.toml` and
 | **L2 — crate dependency** | Depend on `pixi-sandbox-core` for `shard`/`verify`/`manifest` instead of writing our own | Phase 3–4 at the earliest | ⚠️ Re-evaluate; it is pre-1.0 with no stable-interface promise, and `manifest.json` has its own `SCHEMA_VERSION` |
 | **L3 — product surface** | Use `unpack`/`restore` as the sandbox substrate for `pixi skills try` | [P7](../roadmap/improvement-proposals.md), currently "Could" in MoSCoW | ⚠️ Shelling out to `pixi sandbox` beats linking it; both need P7 to be promoted first |
 
+> **Scaffolded 2026-09-21.** L0 is recorded above and L1 is installed but
+> dormant. `.pixi-sandbox.toml` declares the two bundles below,
+> `.github/workflows/publish-sandbox.yml` calls the upstream reusable
+> publisher in release-binary mode pinned to commit `7a2dcb1` (v0.2.0),
+> `.github/workflows/ci.yml` folds the OKF validation into a single CI entry
+> point behind the same probe, and `scripts/restore.sh` is the airlock
+> one-liner. Nothing publishes a branch for a workspace that does not exist:
+> every gate probes for `pixi.toml` + `pixi.lock` and skips. Release mode is
+> not a shortcut — upstream *local* mode builds `cargo build -p pixi-sandbox`
+> inside the project and calls `./project/.github/actions/publish-pixi-sandbox`,
+> neither of which will ever exist here, so vendoring those composite actions
+> would have bought a fork to maintain and nothing to run.
+
 ### L1 sketch
 
 `.pixi-sandbox.toml` maps onto the four planned
