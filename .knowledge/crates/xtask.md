@@ -7,7 +7,7 @@ kind: detail
 tags: [crates, xtask, automation, codegen, release, lint, dist]
 status: stable
 created: "2025-01-01"
-updated: "2025-01-01"
+updated: "2026-09-21"
 ---
 
 # xtask
@@ -39,21 +39,21 @@ glob = "0.3"
 anyhow = "1"
 chrono = "0.4"
 
-# Workspace crate — for clap Command introspection
-pixi-skills = { path = "../crates/pixi-skills", default-features = false }
-skills-core = { path = "../crates/skills-core" }
+# Workspace crates — for clap Command introspection
+pixi-skills = { path = "../pixi-skills", default-features = false }
+skills-core = { path = "../skills-core" }
 ```
 
 - **Published**: never
 - **Dependents**: none (terminal node)
-- **Location**: `/xtask/` (at workspace root, not inside `crates/`)
+- **Location**: `crates/xtask/` (a workspace member like the others; moved from the root 2026-09-21)
 
 ---
 
 ## Module Map
 
 ```
-xtask/src/
+crates/xtask/src/
 ├── main.rs              # Clap dispatcher
 ├── cli_docs.rs          # Subcommand: generate CLI reference MDX
 ├── skill_schema.rs      # Subcommand: generate JSON Schema

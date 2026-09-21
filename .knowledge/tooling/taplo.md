@@ -93,8 +93,7 @@ paths = [
 |---|---|---|
 | `pixi.toml` | workspace root | The most frequently edited TOML file |
 | `Cargo.toml` (root) | workspace root | Workspace member declarations |
-| `Cargo.toml` (crates) | `crates/*/Cargo.toml` | Per-crate dependencies |
-| `Cargo.toml` (xtask) | `xtask/Cargo.toml` | xtask dependencies |
+| `Cargo.toml` (crates) | `crates/*/Cargo.toml` | Per-crate dependencies (xtask included since its 2026-09-21 move) |
 | `deny.toml` | workspace root | cargo-deny configuration |
 | `taplo.toml` | workspace root | Taplo's own config (yes, it formats itself) |
 | `rustfmt.toml` | workspace root | rustfmt configuration |
