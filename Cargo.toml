@@ -67,5 +67,41 @@ lto = true
 strip = true
 opt-level = "z"
 
+# Lint set per .knowledge/tooling/rustfmt-clippy.md, adopted with the Phase 0 leftovers.
+# Every crate inherits it via `[lints] workspace = true`; individual crates may only
+# relax, never tighten (the CLI crates below allow the print lints, which is their
+# raison d'être). `unsafe_code` stays `forbid` (stronger than the doc's `deny`).
 [workspace.lints.rust]
 unsafe_code = "forbid"
+missing_docs = "warn"
+unused_imports = "deny"
+dead_code = "warn"
+
+[workspace.lints.clippy]
+# ── Deny: bugs or serious code smells ─────────────────────────────
+unwrap_used = "deny"
+panic = "deny"
+dbg_macro = "deny"
+# ── Warn: context-dependent, CI fails because of `-D warnings` ────
+expect_used = "warn"
+todo = "warn"
+print_stdout = "warn"
+print_stderr = "warn"
+# ── Warn: style and idiom suggestions ─────────────────────────────
+needless_pass_by_value = "warn"
+redundant_closure_for_method_calls = "warn"
+cloned_instead_of_copied = "warn"
+flat_map_option = "warn"
+implicit_clone = "warn"
+inefficient_to_string = "warn"
+manual_let_else = "warn"
+semicolon_if_nothing_returned = "warn"
+trivially_copy_pass_by_ref = "warn"
+unnested_or_patterns = "warn"
+unused_self = "warn"
+# ── Allow: explicitly permitted ───────────────────────────────────
+module_name_repetitions = "allow"
+too_many_arguments = "allow"
+# clippy-owned (moved from rustc in recent toolchains — a rustc table entry
+# triggers `renamed_and_removed_lints`).
+missing_errors_doc = "allow"
