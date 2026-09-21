@@ -36,10 +36,10 @@ clap = { version = "4", features = ["derive", "env", "wrap_help"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-console = "0.15"
-indicatif = "0.17"
-tabled = "0.16"
-dialoguer = "0.11"
+console = "0.16"
+indicatif = "0.18"
+tabled = "0.22"
+dialoguer = "0.12"
 
 # Provider crates (feature-gated)
 skills-provider-github = { path = "../skills-provider-github", optional = true }
